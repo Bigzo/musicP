@@ -5,9 +5,14 @@ import VueRouter from 'vue-router'
 import routes from './router/index'
 import axios from 'axios'
 import VueResource from 'vue-resource'
+import filter from './filter/filter'
+
+import store from './vuex/store'
+
 import common from './assets/css/common'
 import style from './assets/css/style'
 import media from './assets/js/media'
+
 import musicFoot from './components/musicFoot'
 Vue.use(musicFoot)
 
@@ -25,5 +30,6 @@ Vue.config.productionTip = false
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
-  router
+  router,
+  store
 })

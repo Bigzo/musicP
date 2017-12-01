@@ -1,3 +1,6 @@
+// 
+// ***没用到***
+// 
 var slider=(function(){
     init=function(){
         var wrapper=document.getElementById('wrapper');

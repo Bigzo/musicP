@@ -1,7 +1,7 @@
 import App from '../App'
 import HelloWorld from '../components/HelloWorld'
 export default [{
-  path: '/app',
+  path: '/',
   component: App,
   redirect: '/musicList',
   children: [
@@ -9,6 +9,6 @@ export default [{
   ]
 },
 {
-	path: '/',
+	path: '/HelloWorld',
 	component: HelloWorld
 }]
