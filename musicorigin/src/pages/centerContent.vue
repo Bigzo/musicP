@@ -3,11 +3,11 @@
 	  <div class="center_title lightgray">
 	    <div class="title_name">歌曲<span>（22）</span></div>
 	    <div class="title_singer">演唱者</div>
-	    <div class="title_special">专辑</div>
+	    <div class="title_special">专辑{{nowType}}</div>
 	  </div>
 	  <!-- music list -->
 	  <ul class="center_music_list" v-if='ifmusiclist'>
-		    <li v-for='(music, index) in musicSortList[nowIndex].dataList' @dblclick='dbplayMusic(music.song_id)'>
+		    <li v-for='(music, index) in musicDataList' @dblclick='dbplayMusic(music.song_id)'>
 		     <label>
 		       <div class="music_box lf">
 		         <span class="m_check lf"><input type="checkbox" :value="music" v-model='checkList'><img src="../../static/img/choose.png"></span>
@@ -27,7 +27,7 @@
 		       				</ul>
 		       			</div>
 		       		</span>
-		       		<img src="../../static/img/l_x.png" v-if='!ifmusiclist'>
+		       		<img src="../../static/img/l_x.png">
 		       	</span>
 		       </div>
 		     </label>
@@ -55,7 +55,7 @@
 	  	       				</ul>
 	  	       			</div>
 	  	       		</span>
-	  	       		<img src="../../static/img/l_x.png" v-if='!ifmusiclist'>
+	  	       		<img src="../../static/img/l_x.png">
 	  	       	</span>
 	  	       </div>
 	  	     </label>
@@ -65,12 +65,13 @@
 	  <div class="opration_btn">
 	    <div class="btn_check" v-if='ifmusiclist'><input type="checkbox" name="" v-model='allcheck' @click='allcheckFun'><img src="../../static/img/choose.png"></div>
 	    <div class="btn_check" v-else><input type="checkbox" name="" v-model='myallcheck' @click='myallcheckFun'><img src="../../static/img/choose.png"></div>
-	    <div class="btn_button" v-if='ifmusiclist' @click='pushMymusicList'><span><img src="../../static/img/btn_j.png">添加到歌单</span></div>
-	    <div class="btn_button" v-else><span><img src="../../static/img/btn_x.png">删除</span></div>
+	    <div class="btn_button"><span><img src="../../static/img/btn_x.png">删除</span></div>
+	    <div class="btn_button" @click='pushMymusicList'><span><img src="../../static/img/btn_j.png">添加到歌单</span></div>
 	  </div>
 	</div>
 </template>
 <script>
+import async from 'async'
 import {mapGetters, mapState, mapMutations} from 'vuex'
 export default {
 	name: 'centerConetnt',
@@ -80,17 +81,26 @@ export default {
 		  allcheck: false,
 		  checkList: [],
 		  myallcheck: false,
-		  myckeckList: []
+		  myckeckList: [],
+		  musicDataList: []
 		}
 	},
 	computed: {
-		...mapState(['musicSortList', 'nowIndex', 'mySortList', 'ifmusiclist', 'myIndex'])
+		...mapState(['nowType', 'mySortList', 'ifmusiclist', 'myIndex'])
 	},
 	methods: {
-		...mapMutations(['getMusicDataList', 'getMusicWords', 'playMusic', 'pushMymusic']),
+		...mapMutations(['getMusicWords', 'playMusic', 'pushMymusic']),
+		getMusicDataList(t) {
+			this.$http.jsonp('http://tingapi.ting.baidu.com/v1/restserver/ting?format=json&calback=&from=webapp_music&method=baidu.ting.billboard.billList&type=' + t + '&size=15&offset=0').then((response) => {
+				this.musicDataList = response.body.song_list
+				console.log('success!')
+			}).catch((response) => {
+				console.log('error!')
+			})
+		},
 		allcheckFun() {
 			if(this.allcheck === false) {
-				this.musicSortList[this.nowIndex].dataList.forEach((item) => {
+				this.musicDataList.forEach((item) => {
 					this.checkList.push(item)
 				})
 			}else {
@@ -121,7 +131,10 @@ export default {
 		}
 	},
 	created() {
-		this.getMusicDataList()
+		this.getMusicDataList(this.nowType)
+	},
+	updated() {
+		this.getMusicDataList(this.nowType)
 	}
 }
 </script>
