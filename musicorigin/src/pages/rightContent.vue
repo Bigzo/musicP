@@ -20,11 +20,26 @@ export default {
 	name: 'rightContent',
 	data() {
 		return {
-			ifWords: true
+			nowSongContent: ''
 		}
 	},
 	computed: {
-		...mapState(['nowSongContent'])
+		...mapState(['nowSongId'])
+	},
+	watch: {
+		nowSongId: function() {
+			this.getMusicWords(this.nowSongId)
+		}
+	},
+	methods: {
+		// 获取歌词
+		getMusicWords() {
+			this.$http.jsonp('http://tingapi.ting.baidu.com/v1/restserver/ting?format=json&calback=&from=webapp_music&method=baidu.ting.song.lry&songid=' + this.nowSongId).then((response) => {
+				this.nowSongContent = response.body.lrcContent
+			}).catch((response) => {
+				console.log('error!')
+			})
+		},
 	}
 }
 </script>

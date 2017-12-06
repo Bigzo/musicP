@@ -5,46 +5,42 @@ import async from 'async'
 Vue.use(Vuex)
 
 const state = {
-	nowType: 1,
-	// 我的歌曲列表
-	mySortList: [
-		{mname: '纯音乐', dataList: []},
-		{mname: '我的音乐', dataList: []}
-	],
-	ifmusiclist: true,	
-	nowIndex: 0,	//歌曲分类
-	myIndex: 1,
+	nowType: 1,	//当前歌曲分类
 	nowSongId: 566310948,	//当前歌曲id
-	nowSongContent: ''	//当前歌曲歌词
+	mySortList: [	// 我的歌曲列表
+		{mname: '纯音乐', dataList: [{title: '1'}]},
+		{mname: '我的音乐', dataList: [{title: '2'}]},
+		{mname: '喜欢的音乐', dataList: [{title: '3'}]}
+	],
+	myIndex: -1
 }
 const getters = {
 	
 }
 const mutations = {
+	// 改变歌曲分类
 	changeNowType(state, index) {
 		state.nowType = index
 	},
-	ifmusiclistTure(state) {
-		state.ifmusiclist = true
+	// 点击我的音乐 改变nowType
+	makeNowType(state) {
+		state.nowType = 0
 	},
-	ifmusiclistFalse(state) {
-		state.ifmusiclist = false
-	},
-	getMusicWords(state) {
-		Vue.http.jsonp('http://tingapi.ting.baidu.com/v1/restserver/ting?format=json&calback=&from=webapp_music&method=baidu.ting.song.lry&songid=' + state.nowSongId).then((response) => {
-			state.nowSongContent = response.body.lrcContent
-		}).catch((response) => {
-			console.log('error!')
-		})
-	},
-	playMusic(state, id) {
+	// 改变当前歌曲id
+	changeNowSongId(state, id) {
 		state.nowSongId = id
 	},
-	pushMymusic(state, arr) {
-		state.mySortList[1].dataList = arr
+	// 改变我的音乐
+	changeMyIndex(state, index) {
+		state.myIndex = index
 	},
+	// 添加我的音乐分类
 	addMySortList(state, name) {
 		state.mySortList.push({mname: name, dataList: []})
+	},
+	// 添加音乐到分类
+	pushMymusic(state, item) {
+		state.mySortList[1].dataList.push(item)
 	}
 }
 const actions = {

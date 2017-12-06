@@ -32,6 +32,7 @@ export default {
     clickoutside
   },
   methods: {
+    // 点击
     clickRange(e) {
       var len = this.$refs.range.offsetWidth
       if(e.target === this.$refs.spot) {
@@ -45,6 +46,7 @@ export default {
         }
       }
     },
+    // 鼠标按下
     downLenght(e) {
       if(e.target === this.$refs.spot) {
         this.can = 1
@@ -55,6 +57,7 @@ export default {
         this.olen = this.b
       }, 5)
     },
+    // 移动
     moveLenght(e) {
       var len = this.$refs.range.offsetWidth
       if(this.can === 1) {
@@ -70,10 +73,12 @@ export default {
         }
       }
     },
+    // 鼠标松开
     upLenght(e) {
       this.can = 0
       clearInterval(this.proInterval)
     },
+    // 进度条之外点击
     handleClickOutside(e) {
       this.can = 0
     }

@@ -3,10 +3,10 @@
 	  <div class="center_title lightgray">
 	    <div class="title_name">歌曲<span>（22）</span></div>
 	    <div class="title_singer">演唱者</div>
-	    <div class="title_special">专辑{{nowType}}</div>
+	    <div class="title_special">专辑</div>
 	  </div>
 	  <!-- music list -->
-	  <ul class="center_music_list" v-if='ifmusiclist'>
+	  <ul class="center_music_list">
 		    <li v-for='(music, index) in musicDataList' @dblclick='dbplayMusic(music.song_id)'>
 		     <label>
 		       <div class="music_box lf">
@@ -23,49 +23,20 @@
 		       			<img src="../../static/img/l_j.png">
 		       			<div class="choose_collect" v-if='ifcollect'>
 		       				<ul>
-		       					<li v-for='(mym, index) in mySortList' @click.prevent='addMSortList(index, music)'>{{mym.mname}}</li>
+		       					<li v-for='(mym, index) in mySortList' @click.prevent='addMyOneList(index, music)' class="hidden-text">{{mym.mname}}</li>
 		       				</ul>
 		       			</div>
 		       		</span>
-		       		<img src="../../static/img/l_x.png">
+		       		<img src="../../static/img/l_x.png" @click.prevent='deleteMusic(index)'>
 		       	</span>
 		       </div>
 		     </label>
 		   </li>
 	  </ul>
-	  <!-- my music list -->
-	    <ul class="center_music_list" v-else>
-	  	    <li v-for='(music, index) in this.mySortList[myIndex].dataList' @dblclick='dbplayMusic(music.song_id)'>
-	  	     <label>
-	  	       <div class="music_box lf">
-	  	         <span class="m_check lf"><input type="checkbox" :value="music" v-model='myckeckList'><img src="../../static/img/choose.png"></span>
-	  	         <span class="m_num lightgray lf">{{index + 1}}</span>
-	  	         <span class="m_name hidden-text lf">{{music.title}}</span>
-	  	       </div>
-	  	       <div class="m_singer lf hidden-text">{{music.author}}</div>
-	  	       <div class="m_special lf">
-	  	       	<span class="hidden-text lf">{{music.album_title}}</span>
-	  	       	<span class="lf contorl_img">
-	  	       		<img src="../../static/img/l_b.png" @click.prevent='dbplayMusic(music.song_id)'>
-	  	       		<span class="add_img" @mouseover='ifcollect = true' @mouseout='ifcollect = false'>
-	  	       			<img src="../../static/img/l_j.png">
-	  	       			<div class="choose_collect" v-if='ifcollect'>
-	  	       				<ul>
-	  	       					<li v-for='(mym, index) in mySortList' @click.prevent='addMSortList(index, music)'>{{mym.mname}}</li>
-	  	       				</ul>
-	  	       			</div>
-	  	       		</span>
-	  	       		<img src="../../static/img/l_x.png">
-	  	       	</span>
-	  	       </div>
-	  	     </label>
-	  	   </li>
-	    </ul>
 	    <!-- btn -->
 	  <div class="opration_btn">
-	    <div class="btn_check" v-if='ifmusiclist'><input type="checkbox" name="" v-model='allcheck' @click='allcheckFun'><img src="../../static/img/choose.png"></div>
-	    <div class="btn_check" v-else><input type="checkbox" name="" v-model='myallcheck' @click='myallcheckFun'><img src="../../static/img/choose.png"></div>
-	    <div class="btn_button"><span><img src="../../static/img/btn_x.png">删除</span></div>
+	    <div class="btn_check"><input type="checkbox" name="" v-model='allcheck' @click='allcheckFun'><img src="../../static/img/choose.png"></div>
+	    <div class="btn_button" @click='deleteSomeMusic'><span><img src="../../static/img/btn_x.png">删除</span></div>
 	    <div class="btn_button" @click='pushMymusicList'><span><img src="../../static/img/btn_j.png">添加到歌单</span></div>
 	  </div>
 	</div>
@@ -80,24 +51,56 @@ export default {
 		  ifcollect: false,
 		  allcheck: false,
 		  checkList: [],
-		  myallcheck: false,
 		  myckeckList: [],
 		  musicDataList: []
 		}
 	},
 	computed: {
-		...mapState(['nowType', 'mySortList', 'ifmusiclist', 'myIndex'])
+		...mapState(['nowType', 'mySortList', 'myIndex'])
+	},
+	watch: {
+		nowType: function() {
+			this.getMusicDataList(this.nowType)
+		},
+		myIndex: function() {
+			this.getMyMusicList(this.myIndex)
+		}
 	},
 	methods: {
-		...mapMutations(['getMusicWords', 'playMusic', 'pushMymusic']),
+		...mapMutations(['changeNowSongId', 'pushMymusic']),
+		// 获取音乐
 		getMusicDataList(t) {
 			this.$http.jsonp('http://tingapi.ting.baidu.com/v1/restserver/ting?format=json&calback=&from=webapp_music&method=baidu.ting.billboard.billList&type=' + t + '&size=15&offset=0').then((response) => {
 				this.musicDataList = response.body.song_list
-				console.log('success!')
 			}).catch((response) => {
 				console.log('error!')
 			})
 		},
+		// 播放音乐
+		dbplayMusic(id) {
+			this.changeNowSongId(id)
+		},
+		// 删除音乐
+		deleteMusic(index) {
+			this.musicDataList.splice(index, 1)
+		},
+		// 多个删除
+		deleteSomeMusic() {
+			this.checkList.forEach((item) => {
+				this.musicDataList.forEach((music, index) => {
+					if(item.song_id === music.song_id) {
+						this.musicDataList.splice(index, 1)
+					}
+				})
+			})
+			this.checkList = []
+			this.allcheck = false
+		},
+		// 获取我的音乐
+		getMyMusicList(index) {
+			this.musicDataList = this.mySortList[index].dataList
+		},
+		// 全选
 		allcheckFun() {
 			if(this.allcheck === false) {
 				this.musicDataList.forEach((item) => {
@@ -107,33 +110,39 @@ export default {
 				this.checkList = []
 			}
 		},
-		myallcheckFun() {
-			if(this.myallcheck === false) {
-				this.mySortList[1].dataList.forEach((item) => {
-					this.myckeckList.push(item)
-				})
-			}else {
-				this.myckeckList = []
-			}
-		},
-		dbplayMusic(id) {
-			this.playMusic(id)
-			this.getMusicWords()
-		},
+		// 添加到我的音乐
 		pushMymusicList() {
-			this.pushMymusic(this.checkList)
-			console.log(this.mySortList)
+			this.checkList.forEach((item) => {
+				var x = false
+				this.mySortList[1].dataList.forEach((music) => {
+					if(item.song_id === music.song_id) {
+						x = true
+					}
+				})
+				if(x === true) {
+				}else {
+					this.pushMymusic(item)
+				}
+			})
+			this.checkList = []
+			this.allcheck = false
 		},
-		addMSortList(i, item) {
-			this.ifcollect = false
-			this.mySortList[i].dataList.push(item)
-			console.log(item)
+		// 添加一首歌
+		addMyOneList(i, item) {
+			var x = false
+			this.mySortList[i].dataList.forEach((music) => {
+				if(item.song_id === music.song_id) {
+					x = true
+				}
+			})
+			if(x === true) {
+			}else {
+				this.ifcollect = false
+				this.mySortList[i].dataList.push(item)
+			}
 		}
 	},
 	created() {
-		this.getMusicDataList(this.nowType)
-	},
-	updated() {
 		this.getMusicDataList(this.nowType)
 	}
 }

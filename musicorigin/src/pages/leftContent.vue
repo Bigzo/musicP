@@ -3,20 +3,21 @@
 	  <div class="music_classify">
 	    <div class="music_title lightgray">歌曲分类</div>
 	    <ul>
-	      <li v-for='(msort, index) in musicSortLists' :class="[(index === numli && ifmusiclist === true) ? 'active' : '']" @click='musicLi(index, msort.type)'><span class="darkgray">{{msort.mname | firstWord}}</span><span>{{msort.mname}}</span></li>
+	      <li v-for='(msort, index) in musicSortLists' :class="[(index === numli && ifmusiclist === true) ? 'active' : '']" @click='clickMusicLi(index, msort.type)'><span class="darkgray">{{msort.mname | firstWord}}</span><span>{{msort.mname}}</span></li>
 	    </ul>
 	  </div>
 	  <div class="music_my">
 	    <div class="music_title lightgray">我的歌单<span class="build_classify rt darkgray" @click='ifinput = !ifinput'>+</span></div>
-	    <input type="text" name="" class="addInput" v-if='ifinput' @keyup.enter='addMyList' v-model='myName'>
+	    <input type="text" name="" class="addInput" v-if='ifinput' @keyup.enter='addMyMusicList' v-model='myName'>
 	    <ul>
-	      <li v-for='(mli, index) in mySortList' :class="[(index === myli && ifmusiclist === false) ? 'active' : '']" @click='myMusicLi(index)'><span class="darkgray">{{mli.mname | firstWord}}</span><span>{{mli.mname}}</span></li>
+	      <li v-for='(mli, index) in mySortList' :class="[(index === myli && ifmusiclist === false) ? 'active' : '']" @click='clickMyMusicLi(index)'><span class="darkgray">{{mli.mname | firstWord}}</span><span>{{mli.mname}}</span></li>
 	    </ul>
 	  </div>
 	</div>
 </template>
 <script>
 import {mapState, mapMutations} from 'vuex'
+import async from 'async'
 export default {
 	name: 'leftContent',
 	data() {
@@ -25,37 +26,40 @@ export default {
 			myli: -1,
 			ifinput: false,
 			myName: '',
-			// 歌曲列表
-			musicSortLists: [
-			  {mname: '新歌榜', type: 1, dataList: []},
-			  {mname: '热歌榜', type: 2, dataList: []},
-			  {mname: '摇滚榜', type: 11, dataList: []},
-			  {mname: '爵士', type: 12, dataList: []},
-			  {mname: '流行', type: 16, dataList: []},
-			  {mname: '欧美金曲榜', type: 21, dataList: []},
-			  {mname: '经典老歌榜', type: 22, dataList: []},
-			  {mname: '情歌对唱榜', type: 23, dataList: []},
-			  {mname: '影视金曲榜', type: 24, dataList: []},
-			  {mname: '网络歌曲榜', type: 25, dataList: []}
-			]
+			musicSortLists: [	// 歌曲分类列表
+			  {mname: '新歌榜', type: 1},
+			  {mname: '热歌榜', type: 2},
+			  {mname: '摇滚榜', type: 11},
+			  {mname: '爵士', type: 12},
+			  {mname: '流行', type: 16},
+			  {mname: '欧美金曲榜', type: 21},
+			  {mname: '经典老歌榜', type: 22},
+			  {mname: '情歌对唱榜', type: 23},
+			  {mname: '影视金曲榜', type: 24},
+			  {mname: '网络歌曲榜', type: 25}
+			],
+			ifmusiclist: true
 		}
 	},
 	computed: {
-		...mapState(['nowType', 'mySortList', 'ifmusiclist'])
+		...mapState(['mySortList'])
 	},
 	methods: {
-		...mapMutations(['changeNowType', 'ifmusiclistFalse', 'ifmusiclistTure', 'addMySortList']),
-		musicLi(i, t) {
+		...mapMutations(['changeNowType', 'changeMyIndex', 'addMySortList', 'makeNowType']),
+		// 点击歌曲分类
+		clickMusicLi(i, t) {
 			this.numli = i
 			this.changeNowType(t)
-			this.ifmusiclistTure()
-			console.log(t)
+			this.ifmusiclist = true
 		},
-		myMusicLi(i) {
+		// 点击我的音乐
+		clickMyMusicLi(i) {
 			this.myli = i
-			this.ifmusiclistFalse()
+			this.changeMyIndex(i)
+			this.ifmusiclist = false
 		},
-		addMyList() {
+		// 添加我的音乐分类
+		addMyMusicList() {
 			this.addMySortList(this.myName)
 			this.myName = ''
 			this.ifinput = false
