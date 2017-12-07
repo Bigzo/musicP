@@ -28,6 +28,11 @@ export default {
       b: 0
     }
   },
+  watch: {
+    pw: function() {
+      this.startFun()
+    }
+  },
   directives: {
     clickoutside
   },
@@ -81,10 +86,13 @@ export default {
     // 进度条之外点击
     handleClickOutside(e) {
       this.can = 0
+    },
+    startFun() {
+      this.pwlen = this.pw
     }
   },
   created() {
-    this.pwlen = this.pw
+    this.startFun()
   }
 }
 </script>

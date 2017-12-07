@@ -7,7 +7,7 @@
 	  </div>
 	  <!-- music list -->
 	  <ul class="center_music_list">
-		    <li v-for='(music, index) in musicDataList' @dblclick='dbplayMusic(music.song_id)'>
+		    <li v-for='(music, index) in musicDataList' @dblclick='dbplayMusic({i: index, data: musicDataList})'>
 		     <label>
 		       <div class="music_box lf">
 		         <span class="m_check lf"><input type="checkbox" :value="music" v-model='checkList'><img src="../../static/img/choose.png"></span>
@@ -18,7 +18,7 @@
 		       <div class="m_special lf">
 		       	<span class="hidden-text lf">{{music.album_title}}</span>
 		       	<span class="lf contorl_img">
-		       		<img src="../../static/img/l_b.png" @click.prevent='dbplayMusic(music.song_id)'>
+		       		<img src="../../static/img/l_b.png" @click.prevent='dbplayMusic({i: index, data: musicDataList})'>
 		       		<span class="add_img" @mouseover='ifcollect = true' @mouseout='ifcollect = false'>
 		       			<img src="../../static/img/l_j.png">
 		       			<div class="choose_collect" v-if='ifcollect'>
@@ -77,8 +77,8 @@ export default {
 			})
 		},
 		// 播放音乐
-		dbplayMusic(id) {
-			this.changeNowSongId(id)
+		dbplayMusic(item) {
+			this.changeNowSongId(item)
 		},
 		// 删除音乐
 		deleteMusic(index) {

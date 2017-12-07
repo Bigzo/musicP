@@ -1,7 +1,7 @@
 <template>
 	<div class="list_right lf">
 	  <div class="music_img">
-	    <img src="../../static/img/default_bg.jpg">
+	    <img :src="nowpic" alt='没有相关图片'>
 	  </div>
 	  <div class="music_text">  
 	    <pre v-if="typeof(nowSongContent) === 'undefined' || nowSongContent === '' ? false : true">{{nowSongContent}}</pre>
@@ -24,7 +24,7 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(['nowSongId'])
+		...mapState(['nowSongId', 'nowpic'])
 	},
 	watch: {
 		nowSongId: function() {
@@ -51,10 +51,14 @@ export default {
 }
 .list_right>div.music_img {
   text-align: center;
+  width: 172px;
+  min-height: 172px;
+  margin: auto;
 }
 .list_right>div.music_img>img {
   margin-top: 20px;
   width: 172px;
+  border: none;
 }
 .list_right>div.music_text {
   text-align: center;

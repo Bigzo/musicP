@@ -42,7 +42,7 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(['mySortList'])
+		...mapState(['mySortList', 'myIndex'])
 	},
 	methods: {
 		...mapMutations(['changeNowType', 'changeMyIndex', 'addMySortList', 'makeNowType']),
@@ -57,6 +57,7 @@ export default {
 			this.myli = i
 			this.changeMyIndex(i)
 			this.ifmusiclist = false
+			console.log(this.myIndex)
 		},
 		// 添加我的音乐分类
 		addMyMusicList() {

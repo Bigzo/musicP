@@ -1,7 +1,7 @@
 <template>
 	<div class="music_head" id="mhead">
 	    <div class="my_music_box">
-	      <div class="my_music">
+	      <div class="my_music" @click='changeLO'>
 	        <img src="../../static/img/music.png">
 	        <span>我的音乐</span>
 	      </div>
@@ -13,16 +13,16 @@
 	            <div class="my_search_result">
 	                <div class="result_title">列表</div>
 	                <ul>
-	                  <li v-for='m in listMusic'><span class="hidden-text">{{m.songname}} - {{m.artistname}}</span><img class="rt" src="../../static/img/l_b.png" @click='dbplayMusic(m.songid)'></li>
+	                  <li v-for='(m, index) in listMusic'><span class="hidden-text">{{m.songname}} - {{m.artistname}}</span><img class="rt" src="../../static/img/l_b.png" @click='dbplayMusic({i: index, data: listMusic})'></li>
 	                </ul>
 	            </div>
 	            <div class="my_search_music">
 	                <div class="result_title">音乐库</div>
 	                <ul>
-	                  <li v-for='music in myListMusic'>
+	                  <li v-for='(music, index) in myListMusic'>
 	                    <img class="lf" :src="music.pic_small">
 	                    <div class="lf"><p>{{music.title}}</p><p>{{music.artist_name}}</p></div>
-	                    <img class="rt m_img" src="../../static/img/l_b.png" @click='dbplayMusic(m.song_id)'>
+	                    <img class="rt m_img" src="../../static/img/l_b.png" @click='dbplayMusic({i: index, data: myListMusic})'>
 	                  </li>
 	                </ul>
 	            </div>
@@ -58,7 +58,7 @@ export default {
 		}
 	},
 	methods: {
-		...mapMutations(['changeNowSongId']),
+		...mapMutations(['changeNowSongId', 'changeLO']),
 		// 搜索
 		toSearchMusic() {
 			if(this.searchWord === '') {
@@ -87,7 +87,6 @@ export default {
 				(cb) => {
 					this.$http.jsonp('http://tingapi.ting.baidu.com/v1/restserver/ting?format=json&calback=&from=webapp_music&method=baidu.ting.search.catalogSug&query=' + this.searchWord).then((response) => {
 						this.searchList = response.body.song
-						console.log(response)
 						cb()
 					}).catch((response) => {
 						cb(response)

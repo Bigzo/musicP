@@ -1,12 +1,13 @@
  <template>
   <div class="music_foot" id="mfoot">
+	<audio ref='audioMusic' v-show='true' :src="nowMusicSrc" :loop='ifloop' controls="controls" autoplay="autoplay">you browser does not support!</audio>
     <div class="left_play lf">
     	<img class="prev_img" src="../../static/img/prev.png">
-    	<img class="play_img" @click='playnum = !playnum' v-if='playnum' src="../../static/img/stop.png">
-    	<img class="play_img" @click='playnum = !playnum' v-else src="../../static/img/play.png">
+    	<img class="play_img" @click='playMusic' v-if='playnum' src="../../static/img/stop.png">
+    	<img class="play_img" @click='stopMusic' v-else src="../../static/img/play.png">
     	<img class="next_img" src="../../static/img/next.png">
-    	<img class="loop_img" @click='picnum = !picnum' v-if='picnum' src="../../static/img/list.png">
-    	<img class="loop_img" @click='picnum = !picnum' v-else src="../../static/img/one.png">
+    	<img class="loop_img" @click='loopMusic' v-if='!ifloop' src="../../static/img/list.png">
+    	<img class="loop_img" @click='noLoopMusic' v-else src="../../static/img/one.png">
     </div>
     <div class="media_dv rt">
     	<div class="media_cen">
@@ -21,13 +22,13 @@
     </div>
     <div class="center_plan lf">
     	<div class="center_plan_box">
-    		<div class="playing_music white hidden-text"><span>拥抱你</span> - <span>王佳；关晓彤；易烊千玺；吴牧野</span></div>
+    		<div class="playing_music white hidden-text" v-show='false'><span>{{musicMsg.sname}}</span> - <span>{{musicMsg.sauthor}}</span></div>
     		<div class="playing_bar lightgray">
-    			<div class="start_time lf">00:37</div>
+    			<div class="start_time lf">{{startTime | timeWord}}</div>
     			<div class="music_bar lf">
-    				<range w='100%' dw='90%' pw='50%' ifload='true'></range>
+    				<range w='100%' dw='90%' :pw='pw' ifload='true'></range>
     			</div>
-    			<div class="end_time lf">04:00</div>
+    			<div class="end_time lf">{{musicMsg.sduration | timeWord}}</div>
     		</div>
     	</div>
     </div>
@@ -46,6 +47,7 @@
 </template>
 
 <script>
+import {mapState, mapMutations} from 'vuex'
 import range from './range'
 export default {
   name: 'musicFoot',
@@ -55,20 +57,58 @@ export default {
   data() {
   	return {
   		ifopen: false,
-  		picnum: false,
-  		playnum: false,
-  		ifsounds: true
+  		ifsounds: true,
+  		startTime: '0:00',
+  		pw: '0%',
+  		inter: ''
   	}
+  },
+  computed: {
+  	...mapState(['nowMusicSrc', 'playnum', 'ifloop', 'musicMsg', 'runRange', 'imusic'])
   },
   components: {
   	range
   },
+  watch: {
+  	runRange: function() {
+  		this.startMusic()
+  	},
+  	imusic: function() {
+  		this.changeNowurl()
+  	}
+  },
   methods: {
+  	...mapMutations(['playnumFun', 'stopnumFun', 'loopMusic', 'noLoopMusic', 'selfNextMusic', 'changeNowurl']),
+  	// 高品质
   	openQuality() {
   		this.ifopen = !this.ifopen
   	},	
+  	// 静音
   	soundsContorl() {
   		this.ifsounds = !this.ifsounds
+  	},
+  	// 播放音乐
+  	playMusic() {
+  		this.playnumFun()
+  		this.$refs.audioMusic.play()
+  		this.startMusic()
+  	},
+  	// 暂停播放
+  	stopMusic() {
+  		this.stopnumFun()
+  		this.$refs.audioMusic.pause()
+  		clearInterval(this.inter)
+  	},
+  	startMusic() {
+  		var _this = this
+  		_this.inter = setInterval(function() {
+  			_this.startTime = parseInt(_this.$refs.audioMusic.currentTime)
+  			_this.pw = (_this.startTime / _this.musicMsg.sduration * 100) + '%'
+	  		if(_this.$refs.audioMusic.ended === true) {
+	  			_this.selfNextMusic()
+	  			console.log('stop')
+	  		}
+  		}, 500)
   	}
   },
   created() {
