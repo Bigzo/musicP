@@ -7,11 +7,14 @@
 	  </div>
 	  <!-- music list -->
 	  <ul class="center_music_list">
-		    <li v-for='(music, index) in musicDataList' @dblclick='dbplayMusic({i: index, data: musicDataList})'>
+		    <li v-for='(music, index) in musicDataList' @dblclick='dbplayMusic({i: index, data: musicDataList})' :class="[(imusic === index && ifimusic === true) ? 'activeLi' :'']">
 		     <label>
 		       <div class="music_box lf">
 		         <span class="m_check lf"><input type="checkbox" :value="music" v-model='checkList'><img src="../../static/img/choose.png"></span>
-		         <span class="m_num lightgray lf">{{index + 1}}</span>
+		         <span class="m_num lightgray lf">
+		         	<i v-if="(imusic === index && ifimusic === true) ? false : true">{{index + 1}}</i>
+		         	<i v-else><img src="../../static/img/play.gif"></i>
+		         </span>
 		         <span class="m_name hidden-text lf">{{music.title}}</span>
 		       </div>
 		       <div class="m_singer lf hidden-text">{{music.author}}</div>
@@ -56,7 +59,7 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(['nowType', 'mySortList', 'myIndex'])
+		...mapState(['nowType', 'mySortList', 'myIndex', 'imusic', 'ifimusic', 'dbType', 'dbIndex'])
 	},
 	watch: {
 		nowType: function() {
@@ -67,7 +70,7 @@ export default {
 		}
 	},
 	methods: {
-		...mapMutations(['changeNowSongId', 'pushMymusic']),
+		...mapMutations(['changeNowSongId', 'pushMymusic', 'nowMusic', 'changeDbType', 'ifimusicTrue', 'ifimusicFalse', 'changeDbIndex']),
 		// 获取音乐
 		getMusicDataList(t) {
 			this.$http.jsonp('http://tingapi.ting.baidu.com/v1/restserver/ting?format=json&calback=&from=webapp_music&method=baidu.ting.billboard.billList&type=' + t + '&size=15&offset=0').then((response) => {
@@ -78,7 +81,15 @@ export default {
 		},
 		// 播放音乐
 		dbplayMusic(item) {
+			this.nowMusic(item.i)
 			this.changeNowSongId(item)
+			this.changeDbType()
+			this.changeDbIndex()
+			if(this.dbType === this.nowType && this.dbIndex === this.myIndex) {
+				this.ifimusicTrue()
+			}else {
+				this.ifimusicFalse()
+			}
 		},
 		// 删除音乐
 		deleteMusic(index) {
@@ -188,6 +199,9 @@ export default {
 	.center_music_list>li:last-child {
 	  border: none;
 	}
+	.center_music_list>li.activeLi {
+		background: #f0f0f0;
+	}
 	.center_music_list>li:hover {
 	  background: #f0f0f0;
 	}
@@ -284,6 +298,9 @@ export default {
 	.music_box>.m_num {
 	  width: 40px;
 	  text-align: center;
+	}
+	.music_box>.m_num>i {
+		font-style: normal;
 	}
 	.music_box>.m_name {
 	  width: 175px;

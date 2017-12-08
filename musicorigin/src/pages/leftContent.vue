@@ -42,22 +42,31 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(['mySortList', 'myIndex'])
+		...mapState(['mySortList', 'myIndex', 'dbType', 'dbIndex'])
 	},
 	methods: {
-		...mapMutations(['changeNowType', 'changeMyIndex', 'addMySortList', 'makeNowType']),
+		...mapMutations(['changeNowType', 'changeMyIndex', 'addMySortList', 'makeNowType', 'ifimusicTrue', 'ifimusicFalse']),
 		// 点击歌曲分类
 		clickMusicLi(i, t) {
 			this.numli = i
 			this.changeNowType(t)
 			this.ifmusiclist = true
+			if(this.dbType === t) {
+				this.ifimusicTrue()
+			}else{
+				this.ifimusicFalse()
+			}
 		},
 		// 点击我的音乐
 		clickMyMusicLi(i) {
 			this.myli = i
 			this.changeMyIndex(i)
 			this.ifmusiclist = false
-			console.log(this.myIndex)
+			if(this.dbIndex === i) {
+				this.ifimusicTrue()
+			}else{
+				this.ifimusicFalse()
+			}
 		},
 		// 添加我的音乐分类
 		addMyMusicList() {

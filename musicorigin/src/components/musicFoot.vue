@@ -2,10 +2,10 @@
   <div class="music_foot" id="mfoot">
 	<audio ref='audioMusic' v-show='false' :src="nowMusicSrc" :loop='ifloop' controls="controls" autoplay="autoplay">you browser does not support!</audio>
     <div class="left_play lf">
-    	<img class="prev_img" src="../../static/img/prev.png" @click='prevMusic'>
+    	<img class="prev_img" src="../../static/img/prev.png" @click='prevOneMusic'>
     	<img class="play_img" @click='playMusic' v-if='playnum' src="../../static/img/stop.png">
     	<img class="play_img" @click='stopMusic' v-else src="../../static/img/play.png">
-    	<img class="next_img" src="../../static/img/next.png" @click='nextMusic'>
+    	<img class="next_img" src="../../static/img/next.png" @click='nextOneMusic'>
     	<img class="loop_img" @click='loopMusic' v-if='!ifloop' src="../../static/img/list.png">
     	<img class="loop_img" @click='noLoopMusic' v-else src="../../static/img/one.png">
     </div>
@@ -26,7 +26,7 @@
     		<div class="playing_bar lightgray">
     			<div class="start_time lf">{{startTime | timeWord}}</div>
     			<div class="music_bar lf">
-    				<range w='100%' dw='90%' :pw='pw' ifload='true' v-on:rangeClick='rangeClickFun' v-on:rangeDown='rangeDownFun' v-on:rangUp='rangeUpFun'></range>
+    				<range w='100%' :dw='dw' :pw='pw' ifload='true' v-on:rangeClick='rangeClickFun' v-on:rangeDown='rangeDownFun' v-on:rangUp='rangeUpFun'></range>
     			</div>
     			<div class="end_time lf">{{musicMsg.sduration | timeWord}}</div>
     		</div>
@@ -60,6 +60,7 @@ export default {
   		startTime: '0:00',
   		pw: '0%',
       sw:'100%',
+      dw: '0%',
   		inter: ''
   	}
   },
@@ -79,6 +80,14 @@ export default {
   },
   methods: {
   	...mapMutations(['playnumFun', 'stopnumFun', 'loopMusic', 'noLoopMusic', 'selfNextMusic', 'changeNowurl', 'nextMusic', 'prevMusic']),
+    // 上一曲
+    prevOneMusic() {
+      this.prevMusic()
+    },
+    // 下一曲
+    nextOneMusic() {
+      this.nextMusic()
+    },
   	// 高品质
   	openQuality() {
   		this.ifopen = !this.ifopen
@@ -115,6 +124,7 @@ export default {
 	  			_this.selfNextMusic()
 	  		}
   		}, 500)
+      // console.log(_this.$refs.audioMusic.buffered.start(_this.$refs.audioMusic.buffered.length))
   	},
   	// 点击进度条
   	rangeClickFun(data) {
@@ -131,10 +141,13 @@ export default {
     soundClickFun(data) {
       this.sw = data
       this.$refs.audioMusic.volume = parseInt(data) / 100
+    },
+    // 加载进度
+    loadRangeFun() {
+
     }
   },
   created() {
-    
   }
 }
 </script>

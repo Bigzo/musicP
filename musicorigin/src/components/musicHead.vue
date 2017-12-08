@@ -58,7 +58,7 @@ export default {
 		}
 	},
 	methods: {
-		...mapMutations(['changeNowSongId', 'changeLO']),
+		...mapMutations(['changeNowSongId', 'changeLO', 'ifimusicFalse']),
 		// 搜索
 		toSearchMusic() {
 			if(this.searchWord === '') {
@@ -76,6 +76,7 @@ export default {
 		// 播放音乐
 		dbplayMusic(id) {
 			this.changeNowSongId(id)
+			this.ifimusicFalse()
 		},
 		// 获取数据
 		searchMusic() {

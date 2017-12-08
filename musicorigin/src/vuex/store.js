@@ -10,15 +10,19 @@ const state = {
 	nowurl: 'url(../static/img/default_bg.jpg)',	//背景图
 	nowpic: '../../static/img/default_bg.jpg',		//歌词图
 	nowType: 1,		//当前歌曲分类
+	dbType: 1,
 	nowSongId: 566310948,	//当前歌曲id,
-  	imusic: 0,	//当前歌曲index
+  	imusic: -1,	//当前歌曲index
+  	ifimusic: true,
   	imusicDataList: [],	//当前列表
 	mySortList: [	// 我的歌曲列表
-		{mname: '纯音乐', dataList: [{title: '1'}]},
-		{mname: '我的音乐', dataList: [{title: '2'}]},
-		{mname: '喜欢的音乐', dataList: [{title: '3'}]}
+		{mname: '纯音乐', dataList: []},
+		{mname: '我的音乐', dataList: []},
+		{mname: '喜欢的音乐', dataList: []}
 	],
 	myIndex: -1,	//我的音乐下标
+	dbIndex: -1,
+	headplay: false,
 	nowMusicSrc: '',
   	playnum: true,	//播放音乐
   	ifloop: false,	//是否循环
@@ -33,9 +37,15 @@ const mutations = {
 	changeNowType(state, index) {
 		state.nowType = index
 	},
+	changeDbType(state) {
+		state.dbType = state.nowType	
+	},
 	// 改变我的音乐
 	changeMyIndex(state, index) {
 		state.myIndex = index
+	},
+	changeDbIndex(state) {
+		state.dbIndex = state.myIndex 
 	},
 	// 添加我的音乐分类
 	addMySortList(state, name) {
@@ -124,6 +134,16 @@ const mutations = {
 		}else {
 			state.imusic = 0
 		}
+	},
+	// 当前这曲
+	nowMusic(state, i) {
+		state.imusic = i
+	},
+	ifimusicTrue(state) {
+		state.ifimusic = true
+	},
+	ifimusicFalse(state) {
+		state.ifimusic = false
 	}
 
 }
