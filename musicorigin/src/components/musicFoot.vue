@@ -1,6 +1,6 @@
  <template>
   <div class="music_foot" id="mfoot">
-	<audio ref='audioMusic' v-show='true' :src="nowMusicSrc" :loop='ifloop' controls="controls" autoplay="autoplay">you browser does not support!</audio>
+	<audio ref='audioMusic' v-show='false' :src="nowMusicSrc" :loop='ifloop' controls="controls" autoplay="autoplay">you browser does not support!</audio>
     <div class="left_play lf">
     	<img class="prev_img" src="../../static/img/prev.png" @click='prevMusic'>
     	<img class="play_img" @click='playMusic' v-if='playnum' src="../../static/img/stop.png">
@@ -22,11 +22,11 @@
     </div>
     <div class="center_plan lf">
     	<div class="center_plan_box">
-    		<div class="playing_music white hidden-text" v-show='false'><span>{{musicMsg.sname}}</span> - <span>{{musicMsg.sauthor}}</span></div>
+    		<div class="playing_music white hidden-text"><span>{{musicMsg.sname}}</span> - <span>{{musicMsg.sauthor}}</span></div>
     		<div class="playing_bar lightgray">
     			<div class="start_time lf">{{startTime | timeWord}}</div>
     			<div class="music_bar lf">
-    				<range w='100%' dw='90%' :pw='pw' ifload='true' v-on:rangeClick='rangeClickFun' v-on:rangeDown='rangeDownFun' v-on:rangUp='upDownFun'></range>
+    				<range w='100%' dw='90%' :pw='pw' ifload='true' v-on:rangeClick='rangeClickFun' v-on:rangeDown='rangeDownFun' v-on:rangUp='rangeUpFun'></range>
     			</div>
     			<div class="end_time lf">{{musicMsg.sduration | timeWord}}</div>
     		</div>
@@ -38,8 +38,7 @@
     		<img class="lf" v-if='ifsounds' @click='soundsContorl' src="../../static/img/sounds.png">
     		<img class="lf" v-else @click='soundsContorl' src="../../static/img/closesounds.png">
     		<div class="sounds_bar lf">
-    			<range w='100%' pw='30%' ifload='' v-if='ifsounds' key='sounds_open'></range>
-    			<range w='100%' pw='0%' ifload='' v-else key='sounds_close'></range>
+    			<range w='100%' :pw='sw' ifload='' v-on:rangeClick='soundClickFun'></range>
     		</div>
     	</div>
     </div>
@@ -60,6 +59,7 @@ export default {
   		ifsounds: true,
   		startTime: '0:00',
   		pw: '0%',
+      sw:'100%',
   		inter: ''
   	}
   },
@@ -86,6 +86,13 @@ export default {
   	// 静音
   	soundsContorl() {
   		this.ifsounds = !this.ifsounds
+      if(this.ifsounds === false) {
+        this.sw = '0%'
+        this.$refs.audioMusic.volume = 0
+      }else {
+        this.$refs.audioMusic.volume = 0.5
+        this.sw = '50%'
+      }
   	},
   	// 播放音乐
   	playMusic() {
@@ -114,21 +121,17 @@ export default {
   		this.pw = data
   		this.$refs.audioMusic.currentTime = parseInt(data) / 100 * this.musicMsg.sduration
   	},
-  	rangeMoveFun(data) {
-  		console.log(this.pw)
-  	},
   	rangeDownFun() {
   		clearInterval(this.inter)
   	},
-  	upDownFun() {
+  	rangeUpFun() {
   		this.startMusic()
   	},
-   /* loadLenFun() {
-      var _this = this
-      setInterval(function() {
-       console.log(_this.$refs.audioMusic.buffered)
-      }, 5)
-    }*/
+    // 声音点击
+    soundClickFun(data) {
+      this.sw = data
+      this.$refs.audioMusic.volume = parseInt(data) / 100
+    }
   },
   created() {
     
@@ -195,7 +198,7 @@ export default {
 }
 .center_plan {
 	width: 60%;
-	height: 20%;
+	height: 100%;
 	display: -webkit-box;
 	display: -ms-flexbox;
 	display: flex;
@@ -212,11 +215,17 @@ export default {
 	-webkit-box-align: center;
 	-ms-flex-align: center;
 	align-items: center;
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  user-select: none;
 }
 .center_plan_box {
-	padding-top: 10px;
+	padding-top: 5px;
 	width: 88%;
 	margin: auto;
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  user-select: none;
 }
 .music_bar {
 	width: 85%;
@@ -227,7 +236,7 @@ export default {
 }
 .playing_bar {
 	overflow: hidden;
-	margin-top: 5px;
+	margin-top: 6px;
 	-moz-user-select: none;
 	-webkit-user-select: none;
 	-ms-user-select: none;
