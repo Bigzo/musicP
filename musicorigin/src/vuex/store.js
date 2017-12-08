@@ -13,7 +13,7 @@ const state = {
 	dbType: 1,
 	nowSongId: 566310948,	//当前歌曲id,
   	imusic: -1,	//当前歌曲index
-  	ifimusic: true,
+  	ifimusic: false,
   	imusicDataList: [],	//当前列表
 	mySortList: [	// 我的歌曲列表
 		{mname: '纯音乐', dataList: []},
