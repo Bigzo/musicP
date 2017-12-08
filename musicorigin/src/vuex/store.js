@@ -60,8 +60,12 @@ const mutations = {
 	},
 	// 改变背景图
 	changeNowurl(state) {
-		state.nowSongId = state.imusicDataList[state.imusic].song_id
-		Vue.http.jsonp('http://tingapi.ting.baidu.com/v1/restserver/ting?format=json&calback=&from=webapp_music&method=baidu.ting.song.play&songid=' + state.imusicDataList[state.imusic].song_id).then((response) => {
+		if(state.imusicDataList[state.imusic].song_id === undefined) {
+			state.nowSongId = state.imusicDataList[state.imusic].songid
+		}else {
+			state.nowSongId = state.imusicDataList[state.imusic].song_id
+		}
+		Vue.http.jsonp('http://tingapi.ting.baidu.com/v1/restserver/ting?format=json&calback=&from=webapp_music&method=baidu.ting.song.play&songid=' + state.nowSongId).then((response) => {
 			if(response.body.songinfo.pic_big === ''){
 				state.nowurl = "url(../static/img/allpic.png)"
 				state.nowpic = '../../static/img/allpic.png'
@@ -76,17 +80,16 @@ const mutations = {
 			}
 			state.nowMusicSrc = response.body.bitrate.show_link
 			state.musicMsg = {sname: response.body.songinfo.title, sauthor: response.body.songinfo.author, sduration: response.body.bitrate.file_duration}
-			console.log(response)
 		}).catch((response) => {
 			console.log(response)
 		})
 	},
-	// 播放音乐
+	// 播放
 	playnumFun(state) {
 		state.playnum = false
 		state.runRange = false
 	},
-	// 暂停播放
+	// 暂停
 	stopnumFun(state) {
 		state.playnum = true
 	},
@@ -100,10 +103,26 @@ const mutations = {
 	},
 	// 自动下一曲
 	selfNextMusic(state) {
-		if(state.imusic > state.imusicDataList.length) {
-			state.imusic = state.imusicDataList.length
-		}else {
+		if(state.imusic < state.imusicDataList.length - 1) {
 			state.imusic = state.imusic + 1
+		}else {
+			state.imusic = 0
+		}
+	},
+	// 下一曲
+	nextMusic(state) {
+		if(state.imusic < state.imusicDataList.length - 1) {
+			state.imusic = state.imusic + 1
+		}else {
+			state.imusic = 0
+		}
+	},
+	// 上一曲
+	prevMusic(state) {
+		if(state.imusic > 0) {
+			state.imusic = state.imusic - 1
+		}else {
+			state.imusic = 0
 		}
 	}
 

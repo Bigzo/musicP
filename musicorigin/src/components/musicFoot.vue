@@ -2,18 +2,18 @@
   <div class="music_foot" id="mfoot">
 	<audio ref='audioMusic' v-show='true' :src="nowMusicSrc" :loop='ifloop' controls="controls" autoplay="autoplay">you browser does not support!</audio>
     <div class="left_play lf">
-    	<img class="prev_img" src="../../static/img/prev.png">
+    	<img class="prev_img" src="../../static/img/prev.png" @click='prevMusic'>
     	<img class="play_img" @click='playMusic' v-if='playnum' src="../../static/img/stop.png">
     	<img class="play_img" @click='stopMusic' v-else src="../../static/img/play.png">
-    	<img class="next_img" src="../../static/img/next.png">
+    	<img class="next_img" src="../../static/img/next.png" @click='nextMusic'>
     	<img class="loop_img" @click='loopMusic' v-if='!ifloop' src="../../static/img/list.png">
     	<img class="loop_img" @click='noLoopMusic' v-else src="../../static/img/one.png">
     </div>
     <div class="media_dv rt">
     	<div class="media_cen">
     		<div class="m_text">
-    			<span>拥抱你</span>
-    			<span>群星</span>
+    			<span>{{musicMsg.sname}}</span>
+    			<span>{{musicMsg.sauthor}}</span>
     		</div>
     		<div class="m_img">
     			<img src="../../static/img/default_bg.jpg">
@@ -26,7 +26,7 @@
     		<div class="playing_bar lightgray">
     			<div class="start_time lf">{{startTime | timeWord}}</div>
     			<div class="music_bar lf">
-    				<range w='100%' dw='90%' :pw='pw' ifload='true'></range>
+    				<range w='100%' dw='90%' :pw='pw' ifload='true' v-on:rangeClick='rangeClickFun' v-on:rangeDown='rangeDownFun' v-on:rangUp='upDownFun'></range>
     			</div>
     			<div class="end_time lf">{{musicMsg.sduration | timeWord}}</div>
     		</div>
@@ -78,7 +78,7 @@ export default {
   	}
   },
   methods: {
-  	...mapMutations(['playnumFun', 'stopnumFun', 'loopMusic', 'noLoopMusic', 'selfNextMusic', 'changeNowurl']),
+  	...mapMutations(['playnumFun', 'stopnumFun', 'loopMusic', 'noLoopMusic', 'selfNextMusic', 'changeNowurl', 'nextMusic', 'prevMusic']),
   	// 高品质
   	openQuality() {
   		this.ifopen = !this.ifopen
@@ -103,15 +103,35 @@ export default {
   		var _this = this
   		_this.inter = setInterval(function() {
   			_this.startTime = parseInt(_this.$refs.audioMusic.currentTime)
-  			_this.pw = (_this.startTime / _this.musicMsg.sduration * 100) + '%'
+  			_this.pw = Math.ceil(_this.startTime / _this.musicMsg.sduration * 100) + '%'
 	  		if(_this.$refs.audioMusic.ended === true) {
 	  			_this.selfNextMusic()
-	  			console.log('stop')
 	  		}
   		}, 500)
-  	}
+  	},
+  	// 点击进度条
+  	rangeClickFun(data) {
+  		this.pw = data
+  		this.$refs.audioMusic.currentTime = parseInt(data) / 100 * this.musicMsg.sduration
+  	},
+  	rangeMoveFun(data) {
+  		console.log(this.pw)
+  	},
+  	rangeDownFun() {
+  		clearInterval(this.inter)
+  	},
+  	upDownFun() {
+  		this.startMusic()
+  	},
+   /* loadLenFun() {
+      var _this = this
+      setInterval(function() {
+       console.log(_this.$refs.audioMusic.buffered)
+      }, 5)
+    }*/
   },
   created() {
+    
   }
 }
 </script>
@@ -175,7 +195,7 @@ export default {
 }
 .center_plan {
 	width: 60%;
-	height: 100%;
+	height: 20%;
 	display: -webkit-box;
 	display: -ms-flexbox;
 	display: flex;

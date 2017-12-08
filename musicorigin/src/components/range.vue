@@ -50,7 +50,8 @@ export default {
             this.pwlen = (e.offsetX/len) * 100 +'%';
         }
       }
-    },
+      this.$emit('rangeClick', this.pwlen)
+    },  
     // 鼠标按下
     downLenght(e) {
       if(e.target === this.$refs.spot) {
@@ -61,6 +62,7 @@ export default {
       this.proInterval = setInterval(() => {
         this.olen = this.b
       }, 5)
+      this.$emit('rangeDown')
     },
     // 移动
     moveLenght(e) {
@@ -77,11 +79,13 @@ export default {
           this.pwlen = num / len * 100 + '%'
         }
       }
+      this.$emit('rangeMove', this.can)
     },
     // 鼠标松开
     upLenght(e) {
       this.can = 0
       clearInterval(this.proInterval)
+      this.$emit('rangUp')
     },
     // 进度条之外点击
     handleClickOutside(e) {
