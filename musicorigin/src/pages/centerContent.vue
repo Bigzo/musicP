@@ -59,18 +59,20 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(['nowType', 'mySortList', 'myIndex', 'imusic', 'ifimusic', 'dbType', 'dbIndex'])
+		...mapState(['nowType', 'mySortList', 'myIndex', 'imusic', 'ifimusic', 'dbType', 'dbIndex', 'wordSetTimeout'])
 	},
 	watch: {
 		nowType: function() {
+			if(this.nowType === 0) {return false}
 			this.getMusicDataList(this.nowType)
 		},
 		myIndex: function() {
+			if(this.myIndex === -1) {return false}
 			this.getMyMusicList(this.myIndex)
 		}
 	},
 	methods: {
-		...mapMutations(['changeNowSongId', 'pushMymusic', 'nowMusic', 'changeDbType', 'ifimusicTrue', 'ifimusicFalse', 'changeDbIndex']),
+		...mapMutations(['changeNowSongId', 'pushMymusic', 'nowMusic', 'changeDbType', 'ifimusicTrue', 'ifimusicFalse', 'changeDbIndex', 'setcurrentIndex', 'setScrollT']),
 		// 获取音乐
 		getMusicDataList(t) {
 			this.$http.jsonp('http://tingapi.ting.baidu.com/v1/restserver/ting?format=json&calback=&from=webapp_music&method=baidu.ting.billboard.billList&type=' + t + '&size=15&offset=0').then((response) => {
@@ -81,6 +83,9 @@ export default {
 		},
 		// 播放音乐
 		dbplayMusic(item) {
+			clearTimeout(this.wordSetTimeout)
+			this.setcurrentIndex(0)
+			this.setScrollT(0)
 			this.nowMusic(item.i)
 			this.changeNowSongId(item)
 			this.changeDbType()

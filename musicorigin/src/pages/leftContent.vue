@@ -50,6 +50,7 @@ export default {
 		clickMusicLi(i, t) {
 			this.numli = i
 			this.changeNowType(t)
+			this.changeMyIndex(-1)
 			this.ifmusiclist = true
 			if(this.dbType === t) {
 				this.ifimusicTrue()
@@ -61,6 +62,7 @@ export default {
 		clickMyMusicLi(i) {
 			this.myli = i
 			this.changeMyIndex(i)
+			this.changeNowType(0)
 			this.ifmusiclist = false
 			if(this.dbIndex === i) {
 				this.ifimusicTrue()

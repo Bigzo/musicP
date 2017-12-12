@@ -76,7 +76,6 @@ export default {
 		// 播放音乐
 		dbplayMusic(id) {
 			this.changeNowSongId(id)
-			// 应该取消自动下一曲播放。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。
 		},
 		// 获取数据
 		searchMusic() {

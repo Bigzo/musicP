@@ -65,7 +65,7 @@ export default {
   	}
   },
   computed: {
-  	...mapState(['nowMusicSrc', 'playnum', 'ifloop', 'musicMsg', 'runRange', 'imusic'])
+  	...mapState(['nowMusicSrc', 'playnum', 'ifloop', 'musicMsg', 'runRange', 'imusic', 'currentTime', 'wordSetTimeout'])
   },
   components: {
   	range
@@ -73,19 +73,26 @@ export default {
   watch: {
   	runRange: function() {
   		this.startMusic()
+      this.loadRangeFun()
   	},
   	imusic: function() {
   		this.changeNowurl()
   	}
   },
   methods: {
-  	...mapMutations(['playnumFun', 'stopnumFun', 'loopMusic', 'noLoopMusic', 'selfNextMusic', 'changeNowurl', 'nextMusic', 'prevMusic']),
+  	...mapMutations(['playnumFun', 'stopnumFun', 'loopMusic', 'noLoopMusic', 'selfNextMusic', 'changeNowurl', 'nextMusic', 'prevMusic', 'changeCurrentTime', 'setcurrentIndex', 'setScrollT']),
     // 上一曲
     prevOneMusic() {
+      clearTimeout(this.wordSetTimeout)
+      this.setcurrentIndex(0)
+      this.setScrollT(0)
       this.prevMusic()
     },
     // 下一曲
     nextOneMusic() {
+      clearTimeout(this.wordSetTimeout)
+      this.setcurrentIndex(0)
+      this.setScrollT(0)
       this.nextMusic()
     },
   	// 高品质
@@ -117,10 +124,14 @@ export default {
   	},
   	startMusic() {
   		var _this = this
+      _this.wordTextFun()
   		_this.inter = setInterval(function() {
   			_this.startTime = parseInt(_this.$refs.audioMusic.currentTime)
   			_this.pw = Math.ceil(_this.startTime / _this.musicMsg.sduration * 100) + '%'
 	  		if(_this.$refs.audioMusic.ended === true) {
+          _this.setScrollT(0)
+          _this.setcurrentIndex(0)
+          clearTimeout(_this.wordSetTimeout)
 	  			_this.selfNextMusic()
 	  		}
   		}, 500)
@@ -144,7 +155,20 @@ export default {
     },
     // 加载进度
     loadRangeFun() {
-
+      var eve = 538
+      setInterval(() => {
+        this.dw = this.$refs.audioMusic.buffered.end(0) + 'px'
+        console.log(this.dw)
+      }, 1000)
+    },
+    // 歌词滚动
+    wordTextFun() {
+      var _this = this
+      this.$refs.audioMusic.addEventListener("timeupdate", function() {
+        var curtime = parseInt(_this.$refs.audioMusic.currentTime)
+        _this.changeCurrentTime(curtime)
+        console.log(" 结束： " + _this.$refs.audioMusic.buffered.end(0))
+      })
     }
   },
   created() {

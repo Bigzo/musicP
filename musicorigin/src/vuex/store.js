@@ -27,7 +27,12 @@ const state = {
   	playnum: true,	//播放音乐
   	ifloop: false,	//是否循环
   	musicMsg: {sname: 'music name', sauthor: 'music author', sduration: '0:00'},
-  	runRange: true
+  	runRange: true,
+  	totalWord: 0,	//总共多少行歌词
+  	wordSetTimeout: '',	//歌词定时器
+  	currentTime: 0,	//播放时间
+  	currentIndex: 0,	//播放时间下标
+  	scrollT: 0
 }
 const getters = {
 	
@@ -144,6 +149,29 @@ const mutations = {
 	},
 	ifimusicFalse(state) {
 		state.ifimusic = false
+	},
+	// 获取歌词行数
+	haveTotalWord(state, i) {
+		state.totalWord = i
+	},
+	// 歌词行滚动
+	setWordSetTimeout(state, t) {
+		state.wordSetTimeout = setTimeout(() => {
+			state.scrollT = (state.currentIndex -3) * 30
+			if(state.scrollT > (state.totalWord - 6) * 30) {
+				state.scrollT = (state.totalWord - 6) * 30
+			}
+		}, t)
+	},
+	// 改变当前时间
+	changeCurrentTime(state, i) {
+		state.currentTime = i
+	},
+	setcurrentIndex(state, i) {
+		state.currentIndex = i
+	},
+	setScrollT(state, i) {
+		state.scrollT = i
 	}
 
 }
