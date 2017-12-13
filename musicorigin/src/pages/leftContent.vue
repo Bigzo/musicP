@@ -10,7 +10,7 @@
 	    <div class="music_title lightgray">我的歌单<span class="build_classify rt darkgray" @click='ifinput = !ifinput'>+</span></div>
 	    <input type="text" name="" class="addInput" v-if='ifinput' @keyup.enter='addMyMusicList' v-model='myName'>
 	    <ul>
-	      <li v-for='(mli, index) in mySortList' :class="[(index === myli && ifmusiclist === false) ? 'active' : '']" @click='clickMyMusicLi(index)'><span class="darkgray">{{mli.mname | firstWord}}</span><span>{{mli.mname}}</span></li>
+	      <li v-for='(mli, index) in mySortList' :class="[(index === myIndex && ifmusiclist === false) ? 'active' : '']" @click='clickMyMusicLi(index)'><span class="darkgray">{{mli.mname | firstWord}}</span><span>{{mli.mname}}</span></li>
 	    </ul>
 	  </div>
 	</div>
@@ -23,7 +23,6 @@ export default {
 	data() {
 		return {
 			numli: 0,
-			myli: -1,
 			ifinput: false,
 			myName: '',
 			musicSortLists: [	// 歌曲分类列表
@@ -37,37 +36,35 @@ export default {
 			  {mname: '情歌对唱榜', type: 23},
 			  {mname: '影视金曲榜', type: 24},
 			  {mname: '网络歌曲榜', type: 25}
-			],
-			ifmusiclist: true
+			]
 		}
 	},
 	computed: {
-		...mapState(['mySortList', 'myIndex', 'dbType', 'dbIndex'])
+		...mapState(['mySortList', 'myIndex', 'dbType', 'dbIndex', 'ifmusiclist'])
 	},
 	methods: {
-		...mapMutations(['changeNowType', 'changeMyIndex', 'addMySortList', 'makeNowType', 'ifimusicTrue', 'ifimusicFalse']),
+		...mapMutations(['changeNowType', 'changeMyIndex', 'addMySortList', 'makeNowType', 'ifimusicFun', 'ifmusiclistFun']),
 		// 点击歌曲分类
 		clickMusicLi(i, t) {
 			this.numli = i
 			this.changeNowType(t)
 			this.changeMyIndex(-1)
-			this.ifmusiclist = true
+			this.ifmusiclistFun(true)
 			if(this.dbType === t) {
-				this.ifimusicTrue()
+				this.ifimusicFun(true)
 			}else{
-				this.ifimusicFalse()
+				this.ifimusicFun(false)
 			}
 		},
 		// 点击我的音乐
 		clickMyMusicLi(i) {
-			this.myli = i
 			this.changeMyIndex(i)
 			this.changeNowType(0)
-			this.ifmusiclist = false
+			this.ifmusiclistFun(false)
 			if(this.dbIndex === i) {
-				this.ifimusicTrue()
+				this.ifimusicFun(true)
 			}else{
-				this.ifimusicFalse()
+				this.ifimusicFun(false)
 			}
 		},
 		// 添加我的音乐分类

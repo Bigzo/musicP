@@ -13,7 +13,7 @@
 	            <div class="my_search_result">
 	                <div class="result_title">列表</div>
 	                <ul>
-	                  <li v-for='(m, index) in listMusic'><span class="hidden-text">{{m.songname}} - {{m.artistname}}</span><img class="rt" src="../../static/img/l_b.png" @click='dbplayMusic({i: index, data: listMusic})'></li>
+	                  <li v-for='(m, index) in listMusic'><span class="hidden-text">{{m.title}} - {{m.author}}</span><img class="rt" src="../../static/img/l_b.png" @click='dbplayMusic({i: index, data: listMusic}, m)'></li>
 	                </ul>
 	            </div>
 	            <div class="my_search_music">
@@ -21,7 +21,7 @@
 	                <ul>
 	                  <li v-for='(music, index) in myListMusic'>
 	                    <img class="lf" :src="music.pic_small">
-	                    <div class="lf"><p>{{music.title}}</p><p>{{music.artist_name}}</p></div>
+	                    <div class="lf"><p>{{music.title}}</p><p>{{music.author}}</p></div>
 	                    <img class="rt m_img" src="../../static/img/l_b.png" @click='dbplayMusic({i: index, data: myListMusic})'>
 	                  </li>
 	                </ul>
@@ -58,7 +58,7 @@ export default {
 		}
 	},
 	methods: {
-		...mapMutations(['changeNowSongId', 'changeLO', 'ifimusicFalse']),
+		...mapMutations(['changeNowSongId', 'changeLO', 'ifmusiclistFun', 'changeNowType', 'changeMyIndex']),
 		// 搜索
 		toSearchMusic() {
 			if(this.searchWord === '') {
@@ -74,7 +74,9 @@ export default {
 			this.searchWord = ''
 		},
 		// 播放音乐
-		dbplayMusic(id) {
+		dbplayMusic(id, item) {
+			this.addMyOneList(item)
+			this.clickMyMusicLi()
 			this.changeNowSongId(id)
 		},
 		// 获取数据
@@ -108,7 +110,11 @@ export default {
 						if(x === 1) {
 							_this.myListMusic.push(pMu)
 						}else {
-							_this.listMusic.push(item)
+							this.$http.jsonp('http://tingapi.ting.baidu.com/v1/restserver/ting?format=json&calback=&from=webapp_music&method=baidu.ting.song.play&songid=' + item.songid).then((response) => {
+								_this.listMusic.push(response.body.songinfo)
+							}).catch((response) => {
+								console.log(response)
+							})
 						}
 					}, (err) => {
 						if(err) {
@@ -125,6 +131,26 @@ export default {
 			this.mySortList.forEach((obj) => {
 				this.allMusicList = this.allMusicList.concat(obj.dataList)
 			})
+		},
+		// 添加到我的音乐
+		addMyOneList(item) {
+			var x = false
+			this.mySortList[1].dataList.forEach((music) => {
+				if(item.song_id === music.song_id) {
+					x = true
+				}
+			})
+			if(x === true) {
+			}else {
+				this.ifcollect = false
+				this.mySortList[1].dataList.push(item)
+			}
+		},
+		// 跳转到我的音乐
+		clickMyMusicLi() {
+			this.changeMyIndex(1)
+			this.changeNowType(0)
+			this.ifmusiclistFun(false)
 		}
 	}
 }

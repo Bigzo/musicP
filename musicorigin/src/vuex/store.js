@@ -14,6 +14,7 @@ const state = {
 	nowSongId: 566310948,	//当前歌曲id,
   	imusic: -1,	//当前歌曲index
   	ifimusic: false,
+  	ifmusiclist: true,
   	imusicDataList: [],	//当前列表
 	mySortList: [	// 我的歌曲列表
 		{mname: '纯音乐', dataList: []},
@@ -59,6 +60,9 @@ const mutations = {
 	// 添加音乐到分类
 	pushMymusic(state, item) {
 		state.mySortList[1].dataList.push(item)
+	},
+	ifmusiclistFun(state, str) {
+		state.ifmusiclist = str
 	},
 	// 更改 l o
 	changeLO(state) {
@@ -144,11 +148,8 @@ const mutations = {
 	nowMusic(state, i) {
 		state.imusic = i
 	},
-	ifimusicTrue(state) {
-		state.ifimusic = true
-	},
-	ifimusicFalse(state) {
-		state.ifimusic = false
+	ifimusicFun(state, str) {
+		state.ifimusic = str
 	},
 	// 获取歌词行数
 	haveTotalWord(state, i) {

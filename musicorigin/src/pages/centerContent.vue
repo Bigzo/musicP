@@ -6,7 +6,8 @@
 	    <div class="title_special">专辑</div>
 	  </div>
 	  <!-- music list -->
-	  <ul class="center_music_list">
+	  <div class="load_pic" v-if='musicDataList.length > 0 ? false : true'><img src="../../static/img/load.gif"></div>
+	  <ul class="center_music_list" v-else>
 		    <li v-for='(music, index) in musicDataList' @dblclick='dbplayMusic({i: index, data: musicDataList})' :class="[(imusic === index && ifimusic === true) ? 'activeLi' :'']">
 		     <label>
 		       <div class="music_box lf">
@@ -72,7 +73,7 @@ export default {
 		}
 	},
 	methods: {
-		...mapMutations(['changeNowSongId', 'pushMymusic', 'nowMusic', 'changeDbType', 'ifimusicTrue', 'ifimusicFalse', 'changeDbIndex', 'setcurrentIndex', 'setScrollT']),
+		...mapMutations(['changeNowSongId', 'pushMymusic', 'nowMusic', 'changeDbType', 'ifimusicFun', 'changeDbIndex', 'setcurrentIndex', 'setScrollT']),
 		// 获取音乐
 		getMusicDataList(t) {
 			this.$http.jsonp('http://tingapi.ting.baidu.com/v1/restserver/ting?format=json&calback=&from=webapp_music&method=baidu.ting.billboard.billList&type=' + t + '&size=15&offset=0').then((response) => {
@@ -91,9 +92,9 @@ export default {
 			this.changeDbType()
 			this.changeDbIndex()
 			if(this.dbType === this.nowType && this.dbIndex === this.myIndex) {
-				this.ifimusicTrue()
+				this.ifimusicFun(true)
 			}else {
-				this.ifimusicFalse()
+				this.ifimusicFun(false)
 			}
 		},
 		// 删除音乐
@@ -190,10 +191,14 @@ export default {
 	.title_special {
 	  width: 39%;
 	}
-	.center_music_list {
+	.center_music_list,.load_pic {
 	  height: 83%;
 	  overflow-y: scroll;
 	}
+	.load_pic {
+		text-align: center;
+	}
+	.load_pic>img {margin-top: 150px;width: 80px;}
 	::-webkit-scrollbar {display: none;}
 	.center_music_list>li {
 	  width: 100%;

@@ -61,7 +61,9 @@ export default {
   		pw: '0%',
       sw:'100%',
       dw: '0%',
-  		inter: ''
+  		inter: '',
+      eve: 0,
+      loadInter: ''
   	}
   },
   computed: {
@@ -73,10 +75,10 @@ export default {
   watch: {
   	runRange: function() {
   		this.startMusic()
-      this.loadRangeFun()
   	},
   	imusic: function() {
   		this.changeNowurl()
+      this.loadRangeFun()
   	}
   },
   methods: {
@@ -122,19 +124,20 @@ export default {
   		this.$refs.audioMusic.pause()
   		clearInterval(this.inter)
   	},
+    // 进度条开始
   	startMusic() {
   		var _this = this
       _this.wordTextFun()
-  		_this.inter = setInterval(function() {
-  			_this.startTime = parseInt(_this.$refs.audioMusic.currentTime)
-  			_this.pw = Math.ceil(_this.startTime / _this.musicMsg.sduration * 100) + '%'
-	  		if(_this.$refs.audioMusic.ended === true) {
+      _this.inter = setInterval(function() {
+        _this.startTime = parseInt(_this.$refs.audioMusic.currentTime)
+        _this.pw = Math.ceil(_this.startTime / _this.musicMsg.sduration * 100) + '%'
+        if(_this.$refs.audioMusic.ended === true) {
           _this.setScrollT(0)
           _this.setcurrentIndex(0)
           clearTimeout(_this.wordSetTimeout)
-	  			_this.selfNextMusic()
-	  		}
-  		}, 500)
+          _this.selfNextMusic()
+        }
+      }, 500)
       // console.log(_this.$refs.audioMusic.buffered.start(_this.$refs.audioMusic.buffered.length))
   	},
   	// 点击进度条
@@ -155,11 +158,17 @@ export default {
     },
     // 加载进度
     loadRangeFun() {
-      var eve = 538
-      setInterval(() => {
-        this.dw = this.$refs.audioMusic.buffered.end(0) + 'px'
-        console.log(this.dw)
-      }, 1000)
+      this.eve = 0
+      this.loadInter = setInterval(() => {
+        if(this.eve < 100) {
+          this.eve = (Math.round(this.$refs.audioMusic.buffered.end(0)) / this.musicMsg.sduration) * 100
+          this.dw = this.eve + "%"
+        }else {
+          clearInterval(this.loadInter)
+          this.eve = 100
+          this.dw = this.eve + "%"
+        }
+      }, 200)
     },
     // 歌词滚动
     wordTextFun() {
@@ -167,7 +176,6 @@ export default {
       this.$refs.audioMusic.addEventListener("timeupdate", function() {
         var curtime = parseInt(_this.$refs.audioMusic.currentTime)
         _this.changeCurrentTime(curtime)
-        console.log(" 结束： " + _this.$refs.audioMusic.buffered.end(0))
       })
     }
   },
