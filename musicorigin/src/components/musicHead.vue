@@ -51,7 +51,7 @@ export default {
 	  clickoutside
 	},
 	computed: {
-		...mapState(['mySortList', 'imusic', 'wordSetTimeout', 'dbType', 'nowType', 'myIndex', 'dbIndex'])
+		...mapState(['mySortList', 'imusic', 'wordSetTimeout', 'dbType', 'nowType', 'myIndex', 'dbIndex', 'ifmusiclist'])
 	},
 	watch: {
 		searchWord: function() {
@@ -59,7 +59,7 @@ export default {
 		}
 	},
 	methods: {
-		...mapMutations(['changeNowSongId', 'changeLO', 'ifmusiclistFun', 'changeNowType', 'changeMyIndex', 'setcurrentIndex', 'setScrollT', 'nowMusic', 'changeDbType' ,'changeDbIndex', 'ifimusicFun']),
+		...mapMutations(['changeNowSongId', 'changeLO', 'ifmusiclistFun', 'changeNowType', 'changeMyIndex', 'setcurrentIndex', 'setScrollT', 'nowMusic', 'changeDbType' ,'changeDbIndex', 'ifimusicFun', 'nowMusic']),
 		// 搜索
 		toSearchMusic() {
 			if(this.searchWord === '') {
@@ -156,11 +156,13 @@ export default {
 			if(x === true) {
 			}else {
 				this.ifcollect = false
-				this.iIndex = this.imusic + 1
+				if(this.ifmusiclist === true || this.myIndex !== 1 ) {
+					this.iIndex = this.mySortList[1].dataList.length
+				}else {
+					this.iIndex = this.imusic + 1
+				}
 				this.mySortList[1].dataList.splice(this.iIndex, 0, item)
 			}
-			console.log(this.imusic)
-			console.log(this.mySortList[1].dataList)
 		},
 		// 跳转到我的音乐
 		clickMyMusicLi() {

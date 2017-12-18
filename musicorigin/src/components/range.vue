@@ -121,7 +121,7 @@ export default {
   border-radius: 3px;
 }
 .download_len {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.4);
   z-index: 1;
 }
 .progress_len {
