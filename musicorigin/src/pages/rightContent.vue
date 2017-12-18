@@ -105,7 +105,7 @@ export default {
 }
 .list_right>div.music_text {
   text-align: center;
-  width: 225px;
+  width: 230px;
   margin: auto;
   line-height: 30px;
   font-size: 14px;

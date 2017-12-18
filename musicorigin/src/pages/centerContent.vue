@@ -6,8 +6,10 @@
 	    <div class="title_special">专辑</div>
 	  </div>
 	  <!-- music list -->
-	  <div class="load_pic" v-if='musicDataList.length > 0 ? false : true'><img src="../../static/img/load.gif"></div>
-	  <ul class="center_music_list" v-else>
+	  <!-- 加载动图 -->
+	  <div class="load_pic" v-if='musicDataList.length === [] ? true : false'><img src="../../static/img/load.gif"></div>
+	  <!-- 列表 -->
+	  <ul class="center_music_list" v-else @scroll='scrollSlice($event)'>
 		    <li v-for='(music, index) in musicDataList' @dblclick='dbplayMusic({i: index, data: musicDataList})' :class="[(imusic === index && ifimusic === true) ? 'activeLi' :'']">
 		     <label>
 		       <div class="music_box lf">
@@ -60,7 +62,7 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(['nowType', 'mySortList', 'myIndex', 'imusic', 'ifimusic', 'dbType', 'dbIndex', 'wordSetTimeout'])
+		...mapState(['nowType', 'mySortList', 'myIndex', 'imusic', 'ifimusic', 'dbType', 'dbIndex', 'wordSetTimeout', 'num', 'ifmusiclist'])
 	},
 	watch: {
 		nowType: function() {
@@ -73,10 +75,10 @@ export default {
 		}
 	},
 	methods: {
-		...mapMutations(['changeNowSongId', 'pushMymusic', 'nowMusic', 'changeDbType', 'ifimusicFun', 'changeDbIndex', 'setcurrentIndex', 'setScrollT']),
+		...mapMutations(['changeNowSongId', 'pushMymusic', 'nowMusic', 'changeDbType', 'ifimusicFun', 'changeDbIndex', 'setcurrentIndex', 'setScrollT', 'addNum']),
 		// 获取音乐
 		getMusicDataList(t) {
-			this.$http.jsonp('http://tingapi.ting.baidu.com/v1/restserver/ting?format=json&calback=&from=webapp_music&method=baidu.ting.billboard.billList&type=' + t + '&size=15&offset=0').then((response) => {
+			this.$http.jsonp('http://tingapi.ting.baidu.com/v1/restserver/ting?format=json&calback=&from=webapp_music&method=baidu.ting.billboard.billList&type=' + t + '&size=' + this.num + '&offset=0').then((response) => {
 				this.musicDataList = response.body.song_list
 			}).catch((response) => {
 				console.log('error!')
@@ -84,13 +86,13 @@ export default {
 		},
 		// 播放音乐
 		dbplayMusic(item) {
-			clearTimeout(this.wordSetTimeout)
-			this.setcurrentIndex(0)
-			this.setScrollT(0)
-			this.nowMusic(item.i)
-			this.changeNowSongId(item)
-			this.changeDbType()
-			this.changeDbIndex()
+			clearTimeout(this.wordSetTimeout)	//歌词定时器
+			this.setcurrentIndex(0)		//歌曲播放时间变为0
+			this.setScrollT(0)		//歌词滚动变为0
+			this.nowMusic(item.i)	//当前歌曲index
+			this.changeNowSongId(item)	//播放
+			this.changeDbType()		//另nowType
+			this.changeDbIndex()	//另myIndex
 			if(this.dbType === this.nowType && this.dbIndex === this.myIndex) {
 				this.ifimusicFun(true)
 			}else {
@@ -157,10 +159,21 @@ export default {
 				this.ifcollect = false
 				this.mySortList[i].dataList.push(item)
 			}
+		},
+		scrollSlice(e) {
+			if(this.ifmusiclist === true) {
+				var h = this.num * 40 - 496
+				if(e.currentTarget.scrollTop >= h) {
+					this.addNum(20)
+					this.getMusicDataList(this.nowType)
+				}
+			}
 		}
 	},
 	created() {
-		this.getMusicDataList(this.nowType)
+		this.$nextTick(() => {
+			this.getMusicDataList(this.nowType)
+		})
 	}
 }
 </script>

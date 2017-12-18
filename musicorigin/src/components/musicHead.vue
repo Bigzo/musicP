@@ -13,7 +13,7 @@
 	            <div class="my_search_result">
 	                <div class="result_title">列表</div>
 	                <ul>
-	                  <li v-for='(m, index) in listMusic'><span class="hidden-text">{{m.title}} - {{m.author}}</span><img class="rt" src="../../static/img/l_b.png" @click='dbplayMusic({i: index, data: listMusic}, m)'></li>
+	                  <li v-for='(m, index) in listMusic'><span class="hidden-text">{{m.title}} - {{m.author}}</span><img class="rt" src="../../static/img/l_b.png" @click='dbplayMusic(m)'></li>
 	                </ul>
 	            </div>
 	            <div class="my_search_music">
@@ -22,7 +22,7 @@
 	                  <li v-for='(music, index) in myListMusic'>
 	                    <img class="lf" :src="music.pic_small">
 	                    <div class="lf"><p>{{music.title}}</p><p>{{music.author}}</p></div>
-	                    <img class="rt m_img" src="../../static/img/l_b.png" @click='dbplayMusic({i: index, data: myListMusic})'>
+	                    <img class="rt m_img" src="../../static/img/l_b.png" @click='dbplayMusic(music)'>
 	                  </li>
 	                </ul>
 	            </div>
@@ -43,14 +43,15 @@ export default {
   			searchList: [],		//获取搜索数据
   			listMusic: [],		//列表数据
   			myListMusic: [],	//我的音乐数据
-  			allMusicList: []	//全部的我的音乐
+  			allMusicList: [],	//全部的我的音乐
+  			iIndex: -1		//搜索添加到我音乐的index
 		}
 	},
 	directives: {
 	  clickoutside
 	},
 	computed: {
-		...mapState(['mySortList'])
+		...mapState(['mySortList', 'imusic', 'wordSetTimeout', 'dbType', 'nowType', 'myIndex', 'dbIndex'])
 	},
 	watch: {
 		searchWord: function() {
@@ -58,7 +59,7 @@ export default {
 		}
 	},
 	methods: {
-		...mapMutations(['changeNowSongId', 'changeLO', 'ifmusiclistFun', 'changeNowType', 'changeMyIndex']),
+		...mapMutations(['changeNowSongId', 'changeLO', 'ifmusiclistFun', 'changeNowType', 'changeMyIndex', 'setcurrentIndex', 'setScrollT', 'nowMusic', 'changeDbType' ,'changeDbIndex', 'ifimusicFun']),
 		// 搜索
 		toSearchMusic() {
 			if(this.searchWord === '') {
@@ -74,10 +75,21 @@ export default {
 			this.searchWord = ''
 		},
 		// 播放音乐
-		dbplayMusic(id, item) {
-			this.addMyOneList(item)
+		dbplayMusic(m) {
+			clearTimeout(this.wordSetTimeout)	//歌词定时器
+			this.addMyOneList(m)
 			this.clickMyMusicLi()
-			this.changeNowSongId(id)
+			this.setcurrentIndex(0)		//歌曲播放时间变为0
+			this.setScrollT(0)		//歌词滚动变为0
+			this.nowMusic(this.iIndex)	//当前歌曲index
+			this.changeNowSongId({i: this.iIndex,data: this.mySortList[1].dataList})
+			this.changeDbType()		//另nowType
+			this.changeDbIndex()	//另myIndex
+			if(this.dbType === this.nowType && this.dbIndex === this.myIndex) {
+				this.ifimusicFun(true)
+			}else {
+				this.ifimusicFun(false)
+			}
 		},
 		// 获取数据
 		searchMusic() {
@@ -135,16 +147,20 @@ export default {
 		// 添加到我的音乐
 		addMyOneList(item) {
 			var x = false
-			this.mySortList[1].dataList.forEach((music) => {
+			this.mySortList[1].dataList.forEach((music, index) => {
 				if(item.song_id === music.song_id) {
 					x = true
+					this.iIndex = index
 				}
 			})
 			if(x === true) {
 			}else {
 				this.ifcollect = false
-				this.mySortList[1].dataList.push(item)
+				this.iIndex = this.imusic + 1
+				this.mySortList[1].dataList.splice(this.iIndex, 0, item)
 			}
+			console.log(this.imusic)
+			console.log(this.mySortList[1].dataList)
 		},
 		// 跳转到我的音乐
 		clickMyMusicLi() {

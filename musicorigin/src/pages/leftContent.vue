@@ -43,9 +43,10 @@ export default {
 		...mapState(['mySortList', 'myIndex', 'dbType', 'dbIndex', 'ifmusiclist'])
 	},
 	methods: {
-		...mapMutations(['changeNowType', 'changeMyIndex', 'addMySortList', 'makeNowType', 'ifimusicFun', 'ifmusiclistFun']),
+		...mapMutations(['changeNowType', 'changeMyIndex', 'addMySortList', 'makeNowType', 'ifimusicFun', 'ifmusiclistFun', 'changeNum']),
 		// 点击歌曲分类
 		clickMusicLi(i, t) {
+			this.changeNum(20) 
 			this.numli = i
 			this.changeNowType(t)
 			this.changeMyIndex(-1)
@@ -58,6 +59,7 @@ export default {
 		},
 		// 点击我的音乐
 		clickMyMusicLi(i) {
+			this.changeNum(20)
 			this.changeMyIndex(i)
 			this.changeNowType(0)
 			this.ifmusiclistFun(false)

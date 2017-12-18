@@ -138,7 +138,6 @@ export default {
           _this.selfNextMusic()
         }
       }, 500)
-      // console.log(_this.$refs.audioMusic.buffered.start(_this.$refs.audioMusic.buffered.length))
   	},
   	// 点击进度条
   	rangeClickFun(data) {
@@ -160,13 +159,15 @@ export default {
     loadRangeFun() {
       this.eve = 0
       this.loadInter = setInterval(() => {
-        if(this.eve < 100) {
-          this.eve = (Math.round(this.$refs.audioMusic.buffered.end(0)) / this.musicMsg.sduration) * 100
-          this.dw = this.eve + "%"
-        }else {
-          clearInterval(this.loadInter)
-          this.eve = 100
-          this.dw = this.eve + "%"
+        if(this.eve >= 0) {
+          if(this.eve < 100) {
+            this.eve = (Math.round(this.$refs.audioMusic.buffered.end(0)) / this.musicMsg.sduration) * 100
+            this.dw = this.eve + "%"
+          }else {
+            clearInterval(this.loadInter)
+            this.eve = 100
+            this.dw = this.eve + "%"
+          }
         }
       }, 200)
     },

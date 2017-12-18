@@ -33,7 +33,8 @@ const state = {
   	wordSetTimeout: '',	//歌词定时器
   	currentTime: 0,	//播放时间
   	currentIndex: 0,	//播放时间下标
-  	scrollT: 0
+  	scrollT: 0,
+  	num: 20		//加载音乐20条
 }
 const getters = {
 	
@@ -173,6 +174,12 @@ const mutations = {
 	},
 	setScrollT(state, i) {
 		state.scrollT = i
+	},
+	changeNum(state, n) {
+		state.num = n
+	},
+	addNum(state, n) {
+		state.num += n
 	}
 
 }
