@@ -44,7 +44,7 @@ export default {
   z-index: -1;
   background-repeat: no-repeat;
   background-position: center center;
-  background-size: 100%;
+  background-size: 100% 100%;
   -webkit-filter: blur(15px);
      -moz-filter: blur(15px);
        -o-filter: blur(15px);

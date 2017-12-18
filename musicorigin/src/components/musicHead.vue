@@ -12,12 +12,14 @@
 	        <div class="search_result" v-if='ifresult'>
 	            <div class="my_search_result">
 	                <div class="result_title">列表</div>
-	                <ul>
+	                <p v-if="(listMusic.length < 0 || listMusic.length === 0) ? true : false">未搜索到歌曲</p>
+	                <ul v-else>
 	                  <li v-for='(m, index) in listMusic'><span class="hidden-text">{{m.title}} - {{m.author}}</span><img class="rt" src="../../static/img/l_b.png" @click='dbplayMusic(m)'></li>
 	                </ul>
 	            </div>
 	            <div class="my_search_music">
 	                <div class="result_title">音乐库</div>
+	                <p v-if="(myListMusic.length < 0 || myListMusic.length === 0) ? true : false">未搜索到歌曲</p>
 	                <ul>
 	                  <li v-for='(music, index) in myListMusic'>
 	                    <img class="lf" :src="music.pic_small">
@@ -240,6 +242,12 @@ export default {
 	  text-indent: 20px;
 	  line-height: 30px;
 	}
+	.my_search_result>p,.my_search_music>p {
+		text-align: center;
+		color: #999;
+		font-size: 12px;
+		line-height: 26px;
+	}
 	.my_search_result>ul {
 	  padding: 10px 0px 10px 0px;
 	}
@@ -271,7 +279,7 @@ export default {
 	}
 	.my_search_result>ul>li>img, .my_search_music>ul>li>img.m_img {
 	  height: 20px;
-	  margin-top: 5px;
+	  margin-top: 0px;
 	  cursor: pointer;
 	}
 	@media screen and (max-width: 1024px) {
@@ -281,6 +289,7 @@ export default {
 	  .search_music>input[type=text] {height: 40px;width: 300px;border-radius: 20px;padding-left: 45px;font-size: 20px;}
 	}
 	@media screen and (max-width: 414px) {
+	  .search_result {left: -100px;}
 	  .search_music {height: 30px;}
 	  .search_music>img {height: 20px;}
 	  .search_music>input[type=text] {height: 30px;width: 200px;border-radius: 20px;padding-left: 35px;font-size: 14px;}

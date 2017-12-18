@@ -105,7 +105,7 @@ export default {
 }
 .list_right>div.music_text {
   text-align: center;
-  width: 230px;
+  width: 280px;
   margin: auto;
   line-height: 30px;
   font-size: 14px;
@@ -113,7 +113,7 @@ export default {
   overflow-y: scroll;
 }
 .music_text>div.music_word {
-  font-size: 14px;
+  font-size: 13px;
   line-height: 30px;
 }
 .music_text>div.music_word>p.activep {

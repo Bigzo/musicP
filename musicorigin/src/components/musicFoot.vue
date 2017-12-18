@@ -235,6 +235,7 @@ export default {
 	display: block;
 	font-size: 14px;
 	line-height: 26px;
+  color: #fff;
 }
 .m_img {
 	font-size: 0px;
@@ -355,6 +356,7 @@ export default {
   .left_play {margin-left: 220px;}
   .loop_img {display: none;}
   .media_dv {display: block;}
+  .media_cen>div>span {font-size: 12px;line-height: 18px;}
 }
 @media screen and (max-width: 360px) {
   .left_play>img.prev_img,.left_play>img.next_img {
