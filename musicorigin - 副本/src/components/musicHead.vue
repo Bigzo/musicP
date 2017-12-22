@@ -1,14 +1,14 @@
 <template>
 	<div class="music_head" id="mhead">
 	    <div class="my_music_box">
-	      <div class="my_music" @click='changeLO'>
+	      <div class="my_music" @click='changeLeftOverflow'>
 	        <img src="../../static/img/music.png">
 	        <span>我的音乐</span>
 	      </div>
 	    </div>
 	    <div class="search_music" v-clickoutside='handleClickOutside'>
 	        <img src="../../static/img/search_music.png">
-	        <input type="text" name="smusic" @keyup.enter='toSearchMusic' v-model='searchWord'>
+	        <input type="text" name="smusic" @keyup.enter='toSearchMusic' v-model='searchWord' v-on:input='changeSearchWord'>
 	        <div class="search_result" v-if='ifresult'>
 	            <div class="my_search_result">
 	                <div class="result_title">列表</div>
@@ -53,15 +53,13 @@ export default {
 	  clickoutside
 	},
 	computed: {
-		...mapState(['mySortList', 'imusic', 'wordSetTimeout', 'dbType', 'nowType', 'myIndex', 'dbIndex', 'ifmusiclist'])
-	},
-	watch: {
-		searchWord: function() {
-			this.toSearchMusic()
-		}
+		...mapState(['mySortList', 'imusic', 'wordSetTimeout', 'dbType', 'nowMusicType', 'nowMyMusicIndex', 'dbIndex', 'ifmusiclist'])
 	},
 	methods: {
-		...mapMutations(['changeNowSongId', 'changeLO', 'ifmusiclistFun', 'changeNowType', 'changeMyIndex', 'setcurrentIndex', 'setScrollT', 'nowMusic', 'changeDbType' ,'changeDbIndex', 'ifimusicFun', 'nowMusic']),
+		...mapMutations(['getNowSongId', 'changeLeftOverflow', 'ifSortListFun', 'getNowMyMusicIndex', 'getNowMusicType', 'setcurrentIndex', 'setScrollT', 'getIMusic', 'changeDbTypeIndex', 'ifimusicFun', 'nowMusic']),
+		changeSearchWord() {
+			this.toSearchMusic()
+		},
 		// 搜索
 		toSearchMusic() {
 			if(this.searchWord === '') {
@@ -83,15 +81,15 @@ export default {
 			this.clickMyMusicLi()
 			this.setcurrentIndex(0)		//歌曲播放时间变为0
 			this.setScrollT(0)		//歌词滚动变为0
-			this.nowMusic(this.iIndex)	//当前歌曲index
-			this.changeNowSongId({i: this.iIndex,data: this.mySortList[1].dataList})
-			this.changeDbType()		//另nowType
-			this.changeDbIndex()	//另myIndex
-			if(this.dbType === this.nowType && this.dbIndex === this.myIndex) {
+			this.getIMusic(this.iIndex)	//当前歌曲index
+			this.getNowSongId(this.iIndex)
+			this.changeDbTypeIndex()		//nowMusicType nowMyMusicIndex 赋值
+			if(this.dbType === this.nowMusicType && this.dbIndex === this.nowMyMusicIndex) {
 				this.ifimusicFun(true)
 			}else {
 				this.ifimusicFun(false)
 			}
+			this.$emit('headPlayMusic')
 		},
 		// 获取数据
 		searchMusic() {
@@ -160,8 +158,7 @@ export default {
 			})
 			if(x === true) {
 			}else {
-				this.ifcollect = false
-				if(this.ifmusiclist === true || this.myIndex !== 1 ) {
+				if(this.ifmusiclist === true || this.nowMyMusicIndex !== 1 ) {
 					this.iIndex = this.mySortList[1].dataList.length
 				}else {
 					this.iIndex = this.imusic + 1
@@ -171,9 +168,9 @@ export default {
 		},
 		// 跳转到我的音乐
 		clickMyMusicLi() {
-			this.changeMyIndex(1)
-			this.changeNowType(0)
-			this.ifmusiclistFun(false)
+			this.getNowMyMusicIndex(1)
+			this.getNowMusicType(0)
+			this.ifSortListFun(false)
 		}
 	}
 }

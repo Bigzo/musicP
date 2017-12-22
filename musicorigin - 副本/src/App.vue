@@ -1,8 +1,8 @@
  <template>
   <div class="contain">
        <div class="music_context" :style='{marginLeft: mobileMarginLeft, overflowX: mobileOverflowX}'>
-           <music-head></music-head>
-           <router-view></router-view>
+           <music-head @headPlayMusic='headPlayMusicFunX'></music-head>
+           <router-view @clickMySortListFun='clickMySortListFunX'></router-view>
            <music-foot></music-foot>
        </div>
        <div class="music_bg mask-layer" :style='{backgroundImage: currentBgPic}'></div>
@@ -11,7 +11,7 @@
 
 <script>
 import musicHead from './components/musicHead'
-import {mapState} from 'vuex'
+import {mapState, mapMutations} from 'vuex'
 export default {
   name: 'App',
   data() {
@@ -19,10 +19,20 @@ export default {
     }
   },
   computed: {
-    ...mapState(['mobileMarginLeft', 'mobileOverflowX', 'currentBgPic'])
+    ...mapState(['mobileMarginLeft', 'mobileOverflowX', 'currentBgPic', 'mySortList', 'nowMyMusicIndex'])
   },
   components: {
     musicHead
+  },
+  methods: {
+    ...mapMutations(['haveMusicDataList']),
+    // 搜索跳转
+    clickMySortListFunX(data) {
+      this.haveMusicDataList(this.mySortList[this.nowMyMusicIndex].dataList)
+    },
+    headPlayMusicFunX() {
+       this.haveMusicDataList(this.mySortList[1].dataList)
+    }
   }
 }
 </script>

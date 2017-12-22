@@ -3,14 +3,14 @@
 	  <div class="music_classify">
 	    <div class="music_title lightgray">歌曲分类</div>
 	    <ul>
-	      <li v-for='(msort, index) in musicSortLists' :class="[(index === numli && ifmusiclist === true) ? 'active' : '']" @click='clickMusicLi(index, msort.type)'><span class="darkgray">{{msort.mname | firstWord}}</span><span>{{msort.mname}}</span></li>
+	      <li v-for='(sort, index) in musicSortList' :class="[(index === sortIndex && ifSortList === true) ? 'active' : '']" @click='clickMusicSortList(index, sort.type)'><span class="darkgray">{{sort.mname | firstWord}}</span><span>{{sort.mname}}</span></li>
 	    </ul>
 	  </div>
 	  <div class="music_my">
-	    <div class="music_title lightgray">我的歌单<span class="build_classify rt darkgray" @click='ifinput = !ifinput'>+</span></div>
-	    <input type="text" name="" class="addInput" v-if='ifinput' @keyup.enter='addMyMusicList' v-model='myName'>
+	    <div class="music_title lightgray">我的歌单<span class="build_classify rt darkgray" @click='ifShowInput = !ifShowInput'>+</span></div>
+	    <input type="text" name="" class="addInput" v-if='ifShowInput' @keyup.enter='addMySortList' v-model='mySortName'>
 	    <ul>
-	      <li v-for='(mli, index) in mySortList' :class="[(index === myIndex && ifmusiclist === false) ? 'active' : '']" @click='clickMyMusicLi(index)'><span class="darkgray">{{mli.mname | firstWord}}</span><span>{{mli.mname}}</span></li>
+	      <li v-for='(msort, index) in mySortList' :class="[(index === nowMyMusicIndex && ifSortList === false) ? 'active' : '']" @click='clickMySortList(index)'><span class="darkgray">{{msort.mname | firstWord}}</span><span>{{msort.mname}}</span></li>
 	    </ul>
 	  </div>
 	</div>
@@ -22,10 +22,10 @@ export default {
 	name: 'leftContent',
 	data() {
 		return {
-			numli: 0,
-			ifinput: false,
-			myName: '',
-			musicSortLists: [	// 歌曲分类列表
+			sortIndex: 0,
+			ifShowInput: false,
+			mySortName: '',
+			musicSortList: [	// 歌曲分类列表
 			  {mname: '新歌榜', type: 1},
 			  {mname: '热歌榜', type: 2},
 			  {mname: '摇滚榜', type: 11},
@@ -40,40 +40,36 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(['mySortList', 'myIndex', 'dbType', 'dbIndex', 'ifmusiclist'])
+		...mapState(['mySortList', 'nowMyMusicIndex', 'dbType', 'dbIndex', 'ifSortList'])
 	},
 	methods: {
-		...mapMutations(['changeNowType', 'changeMyIndex', 'addMySortList', 'makeNowType', 'ifimusicFun', 'ifmusiclistFun', 'changeNum']),
+		...mapMutations(['getNowMusicType', 'getNowMyMusicIndex', 'getMySortList', 'ifimusicFun', 'ifSortListFun']),
 		// 点击歌曲分类
-		clickMusicLi(i, t) {
-			this.changeNum(20)
-			this.numli = i
-			this.changeNowType(t)
-			this.changeMyIndex(-1)
-			this.ifmusiclistFun(true)
-			if(this.dbType === t) {
+		clickMusicSortList(index, sortType) {
+			this.sortIndex = index
+			this.ifSortListFun(true)
+			if(this.dbType === sortType) {
 				this.ifimusicFun(true)
 			}else{
 				this.ifimusicFun(false)
 			}
+			this.$emit('clickMusicSortList', sortType)
 		},
 		// 点击我的音乐
-		clickMyMusicLi(i) {
-			this.changeNum(20)
-			this.changeMyIndex(i)
-			this.changeNowType(0)
-			this.ifmusiclistFun(false)
-			if(this.dbIndex === i) {
+		clickMySortList(index) {
+			this.ifSortListFun(false)
+			if(this.dbIndex === index) {
 				this.ifimusicFun(true)
 			}else{
 				this.ifimusicFun(false)
 			}
+			this.$emit('clickMySortList', index)
 		},
 		// 添加我的音乐分类
-		addMyMusicList() {
-			this.addMySortList(this.myName)
-			this.myName = ''
-			this.ifinput = false
+		addMySortList() {
+			this.getMySortList(this.mySortName)
+			this.mySortName = ''
+			this.ifShowInput = false
 		}
 	}
 }
