@@ -10,9 +10,9 @@ const state = {
 	ifSortList: true,		//控制音乐分类和我的音乐 导航的样式
 	musicDataList: [], 		//歌曲列表
 	mySortList: [	// 我的歌曲分类列表
-		{mname: '喜欢的音乐', dataList: [{title:'aa'}]},
-		{mname: '我的音乐', dataList: [{title:'bb'}]},
-		{mname: '纯音乐', dataList: [{title:'cc'}]}
+		{mname: '喜欢的音乐', dataList: []},
+		{mname: '我的音乐', dataList: []},
+		{mname: '纯音乐', dataList: []}
 	],
 	dbType: 1,		//当前歌曲分类赋值
   	imusic: -1,	//当前歌曲index
@@ -95,11 +95,11 @@ const mutations = {
 		state.musicMessage = obj
 	},
 	// 改变当前歌曲
-	changeNowSong(state, index) {
-		mutations.getIMusic(state, index)
-		mutations.playnumFun(state, false)
-		mutations.loopMusic(state, false)
-	},
+	// changeNowSong(state, index) {
+	// 	mutations.getIMusic(state, index)
+	// 	mutations.playnumFun(state, false)
+	// 	mutations.loopMusic(state, false)
+	// },
 	// 播放
 	playnumFun(state, str) {
 		state.playnum = str
@@ -162,7 +162,11 @@ const mutations = {
 	}
 }
 const actions = {
-	
+	changeNowSong(context, index) {
+		context.commit('getIMusic', index)
+		context.commit('playnumFun', false)
+		context.commit('loopMusic', false)
+	}
 }
 export default new Vuex.Store({
 	state,

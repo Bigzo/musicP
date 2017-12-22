@@ -50,7 +50,7 @@
 </template>
 <script>
 import async from 'async'
-import {mapGetters, mapState, mapMutations} from 'vuex'
+import {mapActions, mapState, mapMutations} from 'vuex'
 export default {
 	name: 'centerConetnt',
 	data() {
@@ -65,7 +65,8 @@ export default {
 		...mapState(['nowMusicType', 'mySortList', 'nowMyMusicIndex', 'imusic', 'ifimusic', 'dbType', 'dbIndex', 'wordSetTimeout', 'ifSortList', 'musicDataList'])
 	},
 	methods: {
-		...mapMutations(['changeNowSong', 'pushMymusic', 'getIMusic', 'changeDbTypeIndex', 'ifimusicFun', 'setcurrentIndex', 'setScrollT']),
+		...mapMutations(['pushMymusic', 'getIMusic', 'changeDbTypeIndex', 'ifimusicFun', 'setcurrentIndex', 'setScrollT']),
+		...mapActions(['changeNowSong']),
 		// 播放音乐
 		dbplayMusic(index) {
 			clearTimeout(this.wordSetTimeout)	//歌词定时器
