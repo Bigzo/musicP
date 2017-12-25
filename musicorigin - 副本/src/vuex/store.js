@@ -120,6 +120,7 @@ const mutations = {
 		}else {
 			state.imusic = 0
 		}
+		console.log(state.imusic)
 	},
 	// 下一曲
 	nextMusic(state) {
@@ -128,6 +129,7 @@ const mutations = {
 		}else {
 			state.imusic = 0
 		}
+		console.log(state.imusic)
 	},
 	// 上一曲
 	prevMusic(state) {
@@ -136,6 +138,7 @@ const mutations = {
 		}else {
 			state.imusic = 0
 		}
+		console.log(state.imusic)
 	},
 	// 获取歌词行数
 	haveTotalWord(state, i) {

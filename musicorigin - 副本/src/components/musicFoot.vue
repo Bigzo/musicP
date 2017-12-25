@@ -26,7 +26,7 @@
     		<div class="playing_bar lightgray">
     			<div class="start_time lf">{{startTime | timeWord}}</div>
     			<div class="music_bar lf">
-    				<range w='100%' :dw='dw' :pw.sync='pw' ifload='true' v-on:rangeClick='rangeClickFun' v-on:rangeDown='rangeDownFun' v-on:rangUp='rangeUpFun'></range>
+    				<range w='100%' :dw='dw' :pw='pw' ifload='true' v-on:rangeClick='rangeClickFun' v-on:rangeDown='rangeDownFun' v-on:rangUp='rangeUpFun'></range>
     			</div>
     			<div class="end_time lf">{{musicMessage.sduration | timeWord}}</div>
     		</div>
@@ -38,7 +38,7 @@
     		<img class="lf" v-if='ifsounds' @click='soundsContorl' src="../../static/img/sounds.png">
     		<img class="lf" v-else @click='soundsContorl' src="../../static/img/closesounds.png">
     		<div class="sounds_bar lf">
-    			<range w='100%' :pw.sync='sw' ifload='' v-on:rangeClick='soundClickFun'></range>
+    			<range w='100%' :pw='sw' ifload='' v-on:rangeClick='soundClickFun'></range>
     		</div>
     	</div>
     </div>
@@ -74,7 +74,6 @@ export default {
   },
   watch: {
   	runRange: function() {
-      console.log("1")
   		this.startMusic()
   	},
   	imusic: function() {
@@ -166,9 +165,11 @@ export default {
         _this.startTime = parseInt(_this.$refs.audioMusic.currentTime)
         _this.pw = Math.ceil(_this.startTime / _this.musicMessage.sduration * 100) + '%'
         if(_this.$refs.audioMusic.ended === true) {
+          console.log('end')
+          clearTimeout(_this.wordSetTimeout)
+          _this.$refs.audioMusic.currentTime = 0;
           _this.setScrollT(0)
           _this.setcurrentIndex(0)
-          clearTimeout(_this.wordSetTimeout)
           _this.selfNextMusic()
         }
       }, 500)

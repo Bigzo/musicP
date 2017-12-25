@@ -1,7 +1,7 @@
 <template>
   <div class="range_len" :style='{width: w,height: h}' ref='range' @click='clickRange($event)' @mousedown='downLenght($event)' @mousemove='moveLenght($event)' @mouseup='upLenght($event)'>
       <div class="download_len" v-if="ifload" :style='{width: dw}'></div>
-      <div class="progress_len" :style='{width: pw}' ref='pro'>
+      <div class="progress_len" :style='{width: pwlen}' ref='pro'>
           <i class="len_spot" ref='spot' v-clickoutside='handleClickOutside'></i>
       </div>
   </div>
@@ -78,7 +78,6 @@ export default {
         }else {
           this.pwlen = num / len * 100 + '%'
         }
-        this.$emit('update:pw', this.pwlen)
       }
     },
     // 鼠标松开
