@@ -28,6 +28,11 @@ export default {
       b: 0
     }
   },
+  watch: {
+    pw: function() {
+      this.startFun()
+    }
+  },
   directives: {
     clickoutside
   },
@@ -45,7 +50,6 @@ export default {
             this.pwlen = (e.offsetX/len) * 100 +'%';
         }
       }
-       this.$emit('update:pw', this.pwlen)
        this.$emit('rangeClick', this.pwlen)
     },  
     // 鼠标按下
@@ -86,9 +90,13 @@ export default {
     // 进度条之外点击
     handleClickOutside(e) {
       this.can = 0
+    },
+    startFun() {
+      this.pwlen = this.pw
     }
   },
   created() {
+    this.startFun()
   }
 }
 </script>

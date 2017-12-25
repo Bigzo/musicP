@@ -38,8 +38,8 @@ export default {
     // 点击我的歌单
     clickMySortListFun(data) {
       this.musicNum = 20
-      this.getNowMyMusicIndex(data)
       this.getNowMusicType(0)
+      this.getNowMyMusicIndex(data)
       this.$emit('clickMySortListFun', data)
     },
     // 获取歌曲列表

@@ -60,13 +60,12 @@ export default {
 		  checkList: []		//歌曲的复选框 选中列表
 		}
 	},
-	props: [''],
 	computed: {
 		...mapState(['nowMusicType', 'mySortList', 'nowMyMusicIndex', 'imusic', 'ifimusic', 'dbType', 'dbIndex', 'wordSetTimeout', 'ifSortList', 'musicDataList'])
 	},
 	methods: {
-		...mapMutations(['pushMymusic', 'getIMusic', 'changeDbTypeIndex', 'ifimusicFun', 'setcurrentIndex', 'setScrollT']),
-		...mapActions(['changeNowSong']),
+		...mapMutations(['pushMymusic', 'getIMusic', 'changeDbTypeIndex', 'ifimusicFun', 'setcurrentIndex', 'setScrollT', 'changeNowSong']),
+		...mapActions(['']),
 		// 播放音乐
 		dbplayMusic(index) {
 			clearTimeout(this.wordSetTimeout)	//歌词定时器
