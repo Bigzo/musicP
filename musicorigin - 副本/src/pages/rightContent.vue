@@ -56,7 +56,7 @@ export default {
 				}
 				this.haveTotalWord(this.wordHtml.length)
 			}).catch((response) => {
-				console.log('error!')
+				console.log('word error!')
 			})
 		},
 		// 去掉回车键

@@ -33,7 +33,7 @@ export default {
       this.musicNum = 20
       this.getNowMyMusicIndex(-1)
       this.getNowMusicType(data)
-      this.getMusicDataList(this.nowMusicType)
+      this.getMusicDataList(this.nowMusicType, this.musicNum)
     },
     // 点击我的歌单
     clickMySortListFun(data) {
@@ -44,7 +44,7 @@ export default {
     },
     // 获取歌曲列表
     getMusicDataList(t, n) {
-      this.$http.jsonp('http://tingapi.ting.baidu.com/v1/restserver/ting?format=json&calback=&from=webapp_music&method=baidu.ting.billboard.billList&type=' + t + '&size=' + this.musicNum + '&offset=0').then((response) => {
+      this.$http.jsonp('http://tingapi.ting.baidu.com/v1/restserver/ting?format=json&calback=&from=webapp_music&method=baidu.ting.billboard.billList&type=' + t + '&size=' + n + '&offset=0').then((response) => {
         this.haveMusicDataList(response.body.song_list)
       }).catch((response) => {
         console.log('error!')
@@ -52,10 +52,12 @@ export default {
     },
     // 滚动加载歌曲
     scrollSliceFun(data) {
-      if(data.h > 0) {
-        if(data.eTop >= data.h) {
+      var r = this.musicNum * 40 - data.h
+      if(r > 0) {
+        if(data.eTop >= r) {
+          console.log(1)
           this.musicNum += 20
-          this.getMusicDataList(this.nowMusicType)
+          this.getMusicDataList(this.nowMusicType, this.musicNum)
         }
       }
     }

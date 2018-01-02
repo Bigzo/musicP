@@ -1,7 +1,7 @@
 <template>
 	<div class="list_center lf" id="mcenter">
 	  <div class="center_title lightgray">
-	    <div class="title_name">歌曲<span>（22）</span></div>
+	    <div class="title_name">歌曲<span>（{{musicDataList.length}}）</span></div>
 	    <div class="title_singer">演唱者</div>
 	    <div class="title_special">专辑</div>
 	  </div>
@@ -42,7 +42,7 @@
 	  </ul>
 	    <!-- btn -->
 	  <div class="opration_btn">
-	    <div class="btn_check"><input type="checkbox" name="" v-model='allcheck' @click='allcheckFun'><img src="../../static/img/choose.png"></div>
+	    <div class="btn_check"><input type="checkbox" name="" v-model='allcheck'><img src="../../static/img/choose.png"></div>
 	    <div class="btn_button" @click='deleteSomeMusic'><span><img src="../../static/img/btn_x.png">删除</span></div>
 	    <div class="btn_button" @click='pushMymusicList'><span><img src="../../static/img/btn_j.png">添加到歌单</span></div>
 	  </div>
@@ -58,6 +58,11 @@ export default {
 		  ifcollect: false,		//控制图标显示隐藏
 		  allcheck: false,		//全选
 		  checkList: []		//歌曲的复选框 选中列表
+		}
+	},
+	watch: {
+		allcheck: function() {
+			this.allcheckFun()
 		}
 	},
 	computed: {
@@ -98,7 +103,7 @@ export default {
 		},
 		// 全选
 		allcheckFun() {
-			if(this.allcheck === false) {
+			if(this.allcheck === true) {
 				this.musicDataList.forEach((item) => {
 					this.checkList.push(item)
 				})
@@ -140,14 +145,14 @@ export default {
 		// 滚动加载歌曲
 		scrollSlice(e) {
 			if(this.ifSortList === true) {
-				var h = this.musicDataList.length * 40 - this.$refs.scrollBox.clientHeight
+				var h = this.$refs.scrollBox.clientHeight
 				var eTop = e.currentTarget.scrollTop
 			}
 			this.$emit('scrollSlice', {eTop: eTop, h: h})
 		}
 	},
 	created() {
-		
+		this.allcheckFun()
 	}
 }
 </script>
@@ -288,6 +293,8 @@ export default {
 	  width: 100%;
 	  z-index: 2;
 	  cursor: pointer;
+	  opacity: 0;
+	  filter:alpha(opacity=0);
 	}
 	.music_box>span>input[type=checkbox]:checked +img,.opration_btn>div.btn_check>input[type=checkbox]:checked +img {
 	  display: block;

@@ -105,7 +105,7 @@ export default {
         }
         this.getMusicMessage({ssrc: response.body.bitrate.show_link, sname: response.body.songinfo.title, sauthor: response.body.songinfo.author, sduration: response.body.bitrate.file_duration})
       }).catch((response) => {
-        console.log(response)
+        console.log('info error!')
       })
     }, 
     // 上一曲
