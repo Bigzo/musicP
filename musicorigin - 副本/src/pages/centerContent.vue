@@ -84,6 +84,7 @@ export default {
 			}else {
 				this.ifimusicFun(false)
 			}
+			document.getElementById('myaudio').play()
 		},
 		// 删除音乐
 		deleteMusic(index) {
@@ -257,10 +258,10 @@ export default {
 	  width: 39%;
 	}
 	.m_special>span:nth-child(1) { 
-	  width: 70%;
+	  width: 69%;
 	}
 	.m_special>span:nth-child(2) {
-	  width: 30%;
+	  width: 31%;
 	}
 	.m_special>span>img {
 	  height: 18px;
@@ -345,7 +346,7 @@ export default {
 	  height: 18px;
 	  position: absolute;
 	  left: 8px;
-	  top: 7px;
+	  top: 6px;
 	}
 
 	/*media*/

@@ -3,41 +3,43 @@
 -->
 <template>
   <div class="hello">
-    <h1>{{ msg }}</h1>
-    <button @click='clickFun'>click</button>
-    <div class="box">
-      <width :pw.sync='pp' @smallClick='smallClickFun'></width>
+    <v-touch class="box" v-on:swipeleft="Swipeleft" v-on:swiperight="Swiperight" v-on:swipeup="Swipeup" :style='{marginLeft: l}'>
+      <div></div>
+    </v-touch>
+    <div class="dv" @click.capture='dvClick'>
+      <div class="ch" @click='chClick'></div>
     </div>
   </div>
 </template>
 
 <script>
-import width from './width'
 export default {
   name: 'HelloWorld',
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App',
-      pp: '10%',
-      p: 10,
-      inter: ''
+      lefthe: 0
     }
   },
-  components: {
-    width
+  computed: {
+    l: function() {
+      return this.lefthe + 'px'
+    }
   },
   methods :{
-    clickFun() {
-      this.inter = setInterval(() => {
-         this.p++
-         this.pp = this.p + "%"
-       }, 100)
-     
+    Swipeleft:function(data){
+       this.lefthe = -50
     },
-    smallClickFun() {
-      clearInterval(this.inter)
-      this.p = 100
-      this.clickFun()
+    Swiperight:function(data){
+        this.lefthe = 50
+    },
+    Swipeup:function(data){
+       console.log('Swipeup')
+    },
+    dvClick:function() {
+      alert('dv')
+    },
+    chClick:function() {
+      alert('ch')
     }
   }
 }
@@ -46,8 +48,22 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .box {
-  height: 20px;
-  background: #ccc;
-  padding: 5px;
+  height: 100px;
+  width: 100px;
+}
+.box>div {
+  height: 100%;
+  width: 100%;
+  border: 1px solid red;
+}
+.dv {
+  height: 200px;
+  width: 200px;
+  background: #000;
+}
+.ch {
+  height: 50px;
+  width: 50px;
+  background: red;
 }
 </style>

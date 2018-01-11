@@ -1,6 +1,6 @@
  <template>
   <div class="music_foot" id="mfoot">
-	<audio ref='audioMusic' v-show='false' :src="musicMessage.ssrc" :loop='ifloop' controls="controls" autoplay="autoplay" @timeupdate='radioTimeupdate'>you browser does not support!</audio>
+	<audio ref='audioMusic' v-show='false' :src="musicMessage.ssrc" :loop='ifloop' controls="controls" @timeupdate='radioTimeupdate' id="myaudio">you browser does not support!</audio>
     <div class="left_play lf">
     	<img class="prev_img" src="../../static/img/prev.png" @click='prevOneMusic'>
     	<img class="play_img" @click='playMusic' v-if='playnum' src="../../static/img/stop.png">
@@ -63,7 +63,8 @@ export default {
       dw: '0%',
   		inter: '',    //进度条定时器
       eve: 0,
-      loadInter: ''     //加载定时器
+      loadInter: '',     //加载定时器
+      nowSound: 1
   	}
   },
   computed: {
@@ -92,8 +93,8 @@ export default {
       }
       this.$http.jsonp('http://tingapi.ting.baidu.com/v1/restserver/ting?format=json&calback=&from=webapp_music&method=baidu.ting.song.play&songid=' + this.nowSongId).then((response) => {
         if(response.body.songinfo.pic_big === ''){
-          this.changeCurrentBgPic("../static/img/allpic.png")
-          this.changeCurrentMusicPic('../../static/img/allpic.png')
+          this.changeCurrentBgPic("./static/img/default_bg.jpg")
+          this.changeCurrentMusicPic(' ./static/img/default_bg.jpg')
         }else {
           if(response.body.songinfo.pic_huge === '') {
             this.changeCurrentBgPic(response.body.songinfo.pic_big)
@@ -104,6 +105,8 @@ export default {
           }
         }
         this.getMusicMessage({ssrc: response.body.bitrate.show_link, sname: response.body.songinfo.title, sauthor: response.body.songinfo.author, sduration: response.body.bitrate.file_duration})
+      }).then(() => {
+        this.$refs.audioMusic.play()
       }).catch((response) => {
         console.log('info error!')
       })
@@ -196,14 +199,16 @@ export default {
         this.sw = '0%'
         this.$refs.audioMusic.volume = 0
       }else {
-        this.$refs.audioMusic.volume = 0.5
-        this.sw = '50%'
+        this.$refs.audioMusic.volume = this.nowSound
+        this.sw = (this.nowSound * 100) + '%'
       }
     },
     // 声音点击
     soundClickFun(data) {
       this.sw = data
+      this.nowSound = parseInt(data) / 100
       this.$refs.audioMusic.volume = parseInt(data) / 100
+      this.ifsounds = true
     },
     // 歌词滚动
     radioTimeupdate() {
@@ -262,6 +267,14 @@ export default {
 }
 .m_text {
 	margin-right: 5px;
+}
+.m_text>span {
+  text-align: right;
+  display: inline-block;
+  width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .media_cen>div>span{
 	display: block;
@@ -389,6 +402,9 @@ export default {
   .loop_img {display: none;}
   .media_dv {display: block;}
   .media_cen>div>span {font-size: 12px;line-height: 18px;}
+  .media_cen>div>img {
+    width: 60px;
+  }
 }
 @media screen and (max-width: 360px) {
   .left_play>img.prev_img,.left_play>img.next_img {

@@ -19,9 +19,9 @@ const state = {
   	imusic: -1,	//当前歌曲index
   	ifimusic: false,	//控制音乐分类和我的音乐 正在播放歌曲的样式
 	nowSongId: 566310948,	//当前歌曲id,
-	currentBgPic: 'url(../static/img/default_bg.jpg)',	//当前歌曲背景图
-	currentMusicPic: '../../static/img/default_bg.jpg',		//当前歌曲歌词图
-  	musicMessage: {ssrc: '', sname: 'music name', sauthor: 'music author', sduration: '0:00'},	//当前歌曲信息
+	currentBgPic: 'url(./static/img/default_bg.jpg)',	//当前歌曲背景图
+	currentMusicPic: './static/img/default_bg.jpg',		//当前歌曲歌词图
+  	musicMessage: {ssrc: 'http://zhangmenshiting.qianqian.com/data2/music/3423b48bd35de901b3512fc1f28cd2e3/567299874/567299874.mp3?xcode=c78f533f817747316b73a0f684021956', sname: 'music name', sauthor: 'music author', sduration: '0:00'},	//当前歌曲信息
   	
 	mobileMarginLeft: '',		//移动端 margin-left
 	mobileOverflowX: '',		//移动端 overflow-x
@@ -80,6 +80,17 @@ const mutations = {
 		state.mobileMarginLeft = '0px'
 		state.mobileOverflowX = 'scroll'
 	},
+	/*swipeLeft(state) {
+		var browserWidth = document.body.clientWidth;
+		if(browserWidth < 415) {
+			state.mobileMarginLeft = '-200px'
+		}else {
+			state.mobileMarginLeft = '0px'
+		}
+	},
+	swipeRight(state) {
+		state.mobileMarginLeft = '0px'
+	},*/
 	// 获取歌曲id
 	getNowSongId(state, i) {
 		state.nowSongId = i
@@ -120,7 +131,6 @@ const mutations = {
 		}else {
 			state.imusic = 0
 		}
-		console.log(state.imusic)
 	},
 	// 下一曲
 	nextMusic(state) {
@@ -129,7 +139,6 @@ const mutations = {
 		}else {
 			state.imusic = 0
 		}
-		console.log(state.imusic)
 	},
 	// 上一曲
 	prevMusic(state) {
@@ -138,7 +147,6 @@ const mutations = {
 		}else {
 			state.imusic = 0
 		}
-		console.log(state.imusic)
 	},
 	// 获取歌词行数
 	haveTotalWord(state, i) {
