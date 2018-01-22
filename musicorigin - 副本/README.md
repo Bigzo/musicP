@@ -1,6 +1,7 @@
 # musicorigin
 
-> a music origin
+> a music project http://www.mling.cc/music
+![music]()
 
 ## Build Setup
 
