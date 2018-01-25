@@ -44,7 +44,7 @@ export default {
     },
     // 获取歌曲列表
     getMusicDataList(t, n) {
-      this.$http.jsonp('http://tingapi.ting.baidu.com/v1/restserver/ting?format=json&calback=&from=webapp_music&method=baidu.ting.billboard.billList&type=' + t + '&size=' + n + '&offset=0').then((response) => {
+      this.$http.get('https://api.mling.cc/sortmusic?t=' + t + '&n=' + n + '&offset=0').then((response) => {
         this.haveMusicDataList(response.body.song_list)
       }).catch((response) => {
         console.log('error!')

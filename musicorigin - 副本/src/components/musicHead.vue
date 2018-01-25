@@ -98,7 +98,7 @@ export default {
 			this.getAllMusicList()
 			async.parallel([
 				(cb) => {
-					this.$http.jsonp('http://tingapi.ting.baidu.com/v1/restserver/ting?format=json&calback=&from=webapp_music&method=baidu.ting.search.catalogSug&query=' + this.searchWord).then((response) => {
+					this.$http.get('https://api.mling.cc/searchmusic?query=' + this.searchWord).then((response) => {
 						this.searchList = response.body.song
 						cb()
 					}).catch((response) => {
@@ -124,7 +124,7 @@ export default {
 						if(x === 1) {
 							_this.myListMusic.push(pMu)
 						}else {
-							this.$http.jsonp('http://tingapi.ting.baidu.com/v1/restserver/ting?format=json&calback=&from=webapp_music&method=baidu.ting.song.play&songid=' + item.songid).then((response) => {
+							this.$http.get('https://api.mling.cc/onemusic?songid=' + item.songid).then((response) => {
 								_this.listMusic.push(response.body.songinfo)
 							}).catch((response) => {
 								console.log(response)

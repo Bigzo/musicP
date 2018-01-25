@@ -91,7 +91,7 @@ export default {
       }else {
         this.getNowSongId(this.musicDataList[this.imusic].song_id)
       }
-      this.$http.jsonp('http://tingapi.ting.baidu.com/v1/restserver/ting?format=json&calback=&from=webapp_music&method=baidu.ting.song.play&songid=' + this.nowSongId).then((response) => {
+      this.$http.get('https://api.mling.cc/onemusic?songid=' + this.nowSongId).then((response) => {
         if(response.body.songinfo.pic_big === ''){
           this.changeCurrentBgPic("./static/img/default_bg.jpg")
           this.changeCurrentMusicPic(' ./static/img/default_bg.jpg')

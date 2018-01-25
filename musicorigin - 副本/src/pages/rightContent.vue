@@ -40,7 +40,7 @@ export default {
 		getMusicWords() {
 			this.wordHtml = []
 			this.timeArray = []
-			this.$http.jsonp('http://tingapi.ting.baidu.com/v1/restserver/ting?format=json&calback=&from=webapp_music&method=baidu.ting.song.lry&songid=' + this.nowSongId).then((response) => {
+			this.$http.get('https://api.mling.cc/musicword?songid=' + this.nowSongId).then((response) => {
 				var wordArray = response.body.lrcContent.split('[')
 				for(var i = 0; i < wordArray.length; i++) {
 					if(wordArray[i].split(']')[1] !== '' && wordArray[i].split(']')[1] !== undefined) {
