@@ -1,6 +1,6 @@
 # musicP
 
-> a music project 
+
 > 初学vue的实践项目
 ##### 地址： https://www.mling.cc/music
 ##### PC<br>
