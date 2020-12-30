@@ -19,11 +19,12 @@ Vue.filter('timeWord',function(value){
 	return nword
 })
 
-/*Vue.directive('focus',{
-	inserted:function(el){
-		el.focus()
-	}
-})*/
+// Vue.directive('scrollTop',{
+// 	update:function(el, binding){
+// 		console.log(binding.value + "xx")
+// 		el.scrollTop = binding.value
+// 	}
+// })
 
 
 

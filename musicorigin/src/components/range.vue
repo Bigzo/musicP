@@ -50,7 +50,7 @@ export default {
             this.pwlen = (e.offsetX/len) * 100 +'%';
         }
       }
-      this.$emit('rangeClick', this.pwlen)
+       this.$emit('rangeClick', this.pwlen)
     },  
     // 鼠标按下
     downLenght(e) {
@@ -79,7 +79,6 @@ export default {
           this.pwlen = num / len * 100 + '%'
         }
       }
-      this.$emit('rangeMove', this.can)
     },
     // 鼠标松开
     upLenght(e) {

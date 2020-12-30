@@ -31,27 +31,16 @@ export default {
 			this.getMusicWords()
 		},
 		currentTime: function() {
-			for(var i = 0; i < this.timeArray.length; i++) {
-				if(this.currentTime === this.timeArray[i]) {
-					clearTimeout(this.wordSetTimeout)
-					this.setcurrentIndex(i)
-					if(i > 4) {
-						this.setWordSetTimeout(this.timeArray[i+1])
-						document.getElementById('box').scrollTop = this.scrollT
-					}else {
-						document.getElementById('box').scrollTop = 0
-					}
-				}
-			}
+			this.musixWordScroll()
 		}
 	},
 	methods: {
-		...mapMutations(['haveTotalWord', 'setWordSetTimeout', 'setcurrentIndex', 'setScrollT']),
+		...mapMutations(['haveTotalWord', 'setWordSetTimeout', 'setcurrentIndex']),
 		// 获取歌词
 		getMusicWords() {
 			this.wordHtml = []
 			this.timeArray = []
-			this.$http.jsonp('http://tingapi.ting.baidu.com/v1/restserver/ting?format=json&calback=&from=webapp_music&method=baidu.ting.song.lry&songid=' + this.nowSongId).then((response) => {
+			this.$http.get('https://api.mling.cc/musicword?songid=' + this.nowSongId).then((response) => {
 				var wordArray = response.body.lrcContent.split('[')
 				for(var i = 0; i < wordArray.length; i++) {
 					if(wordArray[i].split(']')[1] !== '' && wordArray[i].split(']')[1] !== undefined) {
@@ -67,7 +56,7 @@ export default {
 				}
 				this.haveTotalWord(this.wordHtml.length)
 			}).catch((response) => {
-				console.log('error!')
+				console.log('word error!')
 			})
 		},
 		// 去掉回车键
@@ -80,7 +69,22 @@ export default {
 		        alert(e.message);    
 		    }    
 		    return string;    
-		}  
+		},
+		// 歌词滚动
+		musixWordScroll() {
+			for(var i = 0; i < this.timeArray.length; i++) {
+				if(this.currentTime === this.timeArray[i]) {
+					clearTimeout(this.wordSetTimeout)
+					this.setcurrentIndex(i)
+					if(i > 4) {
+						this.setWordSetTimeout(this.timeArray[i+1])
+						document.getElementById('box').scrollTop = this.scrollT
+					}else {
+						document.getElementById('box').scrollTop = 0
+					}
+				}
+			}
+		}
 	},
 	created() {
 	}

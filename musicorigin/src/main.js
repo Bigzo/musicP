@@ -16,12 +16,17 @@ import media from './assets/js/media'
 import musicFoot from './components/musicFoot'
 Vue.use(musicFoot)
 
+// 滑动事件
+var VueTouch = require('vue-touch')
+Vue.use(VueTouch, {name: 'v-touch'})
+
 Vue.prototype.$http = axios
 
 Vue.use(VueResource)
 Vue.use(VueRouter)
 
 const router = new VueRouter({
+  // mode: 'history',
   routes
 })
 

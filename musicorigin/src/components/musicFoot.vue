@@ -1,6 +1,6 @@
  <template>
   <div class="music_foot" id="mfoot">
-	<audio ref='audioMusic' v-show='false' :src="nowMusicSrc" :loop='ifloop' controls="controls" autoplay="autoplay">you browser does not support!</audio>
+	<audio ref='audioMusic' v-show='false' :src="musicMessage.ssrc" :loop='ifloop' controls="controls" @timeupdate='radioTimeupdate' id="myaudio">you browser does not support!</audio>
     <div class="left_play lf">
     	<img class="prev_img" src="../../static/img/prev.png" @click='prevOneMusic'>
     	<img class="play_img" @click='playMusic' v-if='playnum' src="../../static/img/stop.png">
@@ -12,8 +12,8 @@
     <div class="media_dv rt">
     	<div class="media_cen">
     		<div class="m_text">
-    			<span>{{musicMsg.sname}}</span>
-    			<span>{{musicMsg.sauthor}}</span>
+    			<span>{{musicMessage.sname}}</span>
+    			<span>{{musicMessage.sauthor}}</span>
     		</div>
     		<div class="m_img">
     			<img :src="currentMusicPic">
@@ -22,13 +22,13 @@
     </div>
     <div class="center_plan lf">
     	<div class="center_plan_box">
-    		<div class="playing_music white hidden-text"><span>{{musicMsg.sname}}</span> - <span>{{musicMsg.sauthor}}</span></div>
+    		<div class="playing_music white hidden-text"><span>{{musicMessage.sname}}</span> - <span>{{musicMessage.sauthor}}</span></div>
     		<div class="playing_bar lightgray">
     			<div class="start_time lf">{{startTime | timeWord}}</div>
     			<div class="music_bar lf">
     				<range w='100%' :dw='dw' :pw='pw' ifload='true' v-on:rangeClick='rangeClickFun' v-on:rangeDown='rangeDownFun' v-on:rangUp='rangeUpFun'></range>
     			</div>
-    			<div class="end_time lf">{{musicMsg.sduration | timeWord}}</div>
+    			<div class="end_time lf">{{musicMessage.sduration | timeWord}}</div>
     		</div>
     	</div>
     </div>
@@ -55,19 +55,20 @@ export default {
   },
   data() {
   	return {
-  		ifopen: false,
-  		ifsounds: true,
+  		ifopen: false,      //高品质
+  		ifsounds: true,     //关闭声音
   		startTime: '0:00',
   		pw: '0%',
       sw:'100%',
       dw: '0%',
-  		inter: '',
+  		inter: '',    //进度条定时器
       eve: 0,
-      loadInter: ''
+      loadInter: '',     //加载定时器
+      nowSound: 1
   	}
   },
   computed: {
-  	...mapState(['nowMusicSrc', 'playnum', 'ifloop', 'musicMsg', 'runRange', 'imusic', 'currentTime', 'wordSetTimeout', 'currentMusicPic'])
+  	...mapState(['musicMessage', 'playnum', 'ifloop', 'runRange', 'imusic', 'wordSetTimeout', 'currentMusicPic', 'nowSongId', 'musicDataList'])
   },
   components: {
   	range
@@ -77,18 +78,48 @@ export default {
   		this.startMusic()
   	},
   	imusic: function() {
-  		this.changeNowurl()
+      this.getMusicInfo()
       this.loadRangeFun()
   	}
   },
   methods: {
-  	...mapMutations(['playnumFun', 'loopMusic', 'selfNextMusic', 'changeNowurl', 'nextMusic', 'prevMusic', 'changeCurrentTime', 'setcurrentIndex', 'setScrollT']),
+  	...mapMutations(['playnumFun', 'loopMusic', 'selfNextMusic', 'nextMusic', 'prevMusic', 'changeCurrentTime', 'setcurrentIndex', 'setScrollT', 'changeCurrentMusicPic', 'changeCurrentBgPic', 'getNowSongId', 'getMusicMessage']),
+    // 改变背景图 音频文件 歌曲信息
+    getMusicInfo() {
+      if(this.musicDataList[this.imusic].song_id === undefined) {
+        this.getNowSongId(this.musicDataList[this.imusic].songid)
+      }else {
+        this.getNowSongId(this.musicDataList[this.imusic].song_id)
+      }
+      this.$http.get('https://api.mling.cc/onemusic?songid=' + this.nowSongId).then((response) => {
+        if(response.body.songinfo.pic_big === ''){
+          this.changeCurrentBgPic("./static/img/default_bg.jpg")
+          this.changeCurrentMusicPic(' ./static/img/default_bg.jpg')
+        }else {
+          if(response.body.songinfo.pic_huge === '') {
+            this.changeCurrentBgPic(response.body.songinfo.pic_big)
+            this.changeCurrentMusicPic(response.body.songinfo.pic_big)
+          }else {
+            this.changeCurrentBgPic(response.body.songinfo.pic_huge)
+            this.changeCurrentMusicPic(response.body.songinfo.pic_big)
+          }
+        }
+        this.getMusicMessage({ssrc: response.body.bitrate.show_link, sname: response.body.songinfo.title, sauthor: response.body.songinfo.author, sduration: response.body.bitrate.file_duration})
+      }).then(() => {
+        this.$refs.audioMusic.play()
+      }).catch((response) => {
+        console.log('info error!')
+      })
+    }, 
     // 上一曲
     prevOneMusic() {
       clearTimeout(this.wordSetTimeout)
       this.setcurrentIndex(0)
       this.setScrollT(0)
       this.prevMusic()
+      this.playnumFun(false)
+      this.$refs.audioMusic.play()
+      this.startMusic()
     },
     // 下一曲
     nextOneMusic() {
@@ -96,22 +127,10 @@ export default {
       this.setcurrentIndex(0)
       this.setScrollT(0)
       this.nextMusic()
+      this.playnumFun(false)
+      this.$refs.audioMusic.play()
+      this.startMusic()
     },
-  	// 高品质
-  	openQuality() {
-  		this.ifopen = !this.ifopen
-  	},	
-  	// 静音
-  	soundsContorl() {
-  		this.ifsounds = !this.ifsounds
-      if(this.ifsounds === false) {
-        this.sw = '0%'
-        this.$refs.audioMusic.volume = 0
-      }else {
-        this.$refs.audioMusic.volume = 0.5
-        this.sw = '50%'
-      }
-  	},
   	// 播放音乐
   	playMusic() {
   		this.playnumFun(false)
@@ -124,37 +143,6 @@ export default {
   		this.$refs.audioMusic.pause()
   		clearInterval(this.inter)
   	},
-    // 进度条开始
-  	startMusic() {
-  		var _this = this
-      _this.wordTextFun()
-      _this.inter = setInterval(function() {
-        _this.startTime = parseInt(_this.$refs.audioMusic.currentTime)
-        _this.pw = Math.ceil(_this.startTime / _this.musicMsg.sduration * 100) + '%'
-        if(_this.$refs.audioMusic.ended === true) {
-          _this.setScrollT(0)
-          _this.setcurrentIndex(0)
-          clearTimeout(_this.wordSetTimeout)
-          _this.selfNextMusic()
-        }
-      }, 500)
-  	},
-  	// 点击进度条
-  	rangeClickFun(data) {
-  		this.pw = data
-  		this.$refs.audioMusic.currentTime = parseInt(data) / 100 * this.musicMsg.sduration
-  	},
-  	rangeDownFun() {
-  		clearInterval(this.inter)
-  	},
-  	rangeUpFun() {
-  		this.startMusic()
-  	},
-    // 声音点击
-    soundClickFun(data) {
-      this.sw = data
-      this.$refs.audioMusic.volume = parseInt(data) / 100
-    },
     // 加载进度
     loadRangeFun() {
       this.eve = 0
@@ -162,7 +150,7 @@ export default {
       this.loadInter = setInterval(() => {
         if(this.eve >= 0) {
           if(this.eve < 100) {
-            this.eve = (Math.round(this.$refs.audioMusic.buffered.end(0)) / this.musicMsg.sduration) * 100
+            this.eve = (Math.round(this.$refs.audioMusic.buffered.end(0)) / this.musicMessage.sduration) * 100
             this.dw = this.eve + "%"
           }else {
             clearInterval(this.loadInter)
@@ -173,13 +161,60 @@ export default {
       }, 200)
      }
     },
+    // 进度条开始
+  	startMusic() {
+  		var _this = this
+      _this.inter = setInterval(function() {
+        _this.startTime = parseInt(_this.$refs.audioMusic.currentTime)
+        _this.pw = Math.ceil(_this.startTime / _this.musicMessage.sduration * 100) + '%'
+        if(_this.$refs.audioMusic.ended === true) {
+          console.log('end')
+          clearTimeout(_this.wordSetTimeout)
+          _this.$refs.audioMusic.currentTime = 0;
+          _this.setScrollT(0)
+          _this.setcurrentIndex(0)
+          _this.selfNextMusic()
+        }
+      }, 500)
+  	},
+  	// 点击进度条
+  	rangeClickFun(data) {
+  		this.pw = data
+  		this.$refs.audioMusic.currentTime = parseInt(data) / 100 * this.musicMessage.sduration
+  	},
+  	rangeDownFun() {
+  		clearInterval(this.inter)
+  	},
+  	rangeUpFun() {
+  		this.startMusic()
+  	},
+    // 高品质
+    openQuality() {
+      this.ifopen = !this.ifopen
+    },  
+    // 静音
+    soundsContorl() {
+      this.ifsounds = !this.ifsounds
+      if(this.ifsounds === false) {
+        this.sw = '0%'
+        this.$refs.audioMusic.volume = 0
+      }else {
+        this.$refs.audioMusic.volume = this.nowSound
+        this.sw = (this.nowSound * 100) + '%'
+      }
+    },
+    // 声音点击
+    soundClickFun(data) {
+      this.sw = data
+      this.nowSound = parseInt(data) / 100
+      this.$refs.audioMusic.volume = parseInt(data) / 100
+      this.ifsounds = true
+    },
     // 歌词滚动
-    wordTextFun() {
-      var _this = this
-      this.$refs.audioMusic.addEventListener("timeupdate", function() {
-        var curtime = parseInt(_this.$refs.audioMusic.currentTime)
-        _this.changeCurrentTime(curtime)
-      })
+    radioTimeupdate() {
+      var curtime = parseInt(this.$refs.audioMusic.currentTime)
+      this.changeCurrentTime(curtime)
+      this.$emit('radioTimeupdate', curtime)
     }
   },
   created() {
@@ -232,6 +267,14 @@ export default {
 }
 .m_text {
 	margin-right: 5px;
+}
+.m_text>span {
+  text-align: right;
+  display: inline-block;
+  width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .media_cen>div>span{
 	display: block;
@@ -359,6 +402,9 @@ export default {
   .loop_img {display: none;}
   .media_dv {display: block;}
   .media_cen>div>span {font-size: 12px;line-height: 18px;}
+  .media_cen>div>img {
+    width: 60px;
+  }
 }
 @media screen and (max-width: 360px) {
   .left_play>img.prev_img,.left_play>img.next_img {

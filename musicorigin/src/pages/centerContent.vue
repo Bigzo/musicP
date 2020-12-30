@@ -1,7 +1,7 @@
 <template>
 	<div class="list_center lf" id="mcenter">
 	  <div class="center_title lightgray">
-	    <div class="title_name">歌曲<span>（22）</span></div>
+	    <div class="title_name">歌曲<span>（{{musicDataList.length}}）</span></div>
 	    <div class="title_singer">演唱者</div>
 	    <div class="title_special">专辑</div>
 	  </div>
@@ -10,7 +10,7 @@
 	  <div class="load_pic" v-if='musicDataList.length === [] ? true : false'><img src="../../static/img/load.gif"></div>
 	  <!-- 列表 -->
 	  <ul class="center_music_list" v-else @scroll='scrollSlice($event)' ref='scrollBox'>
-		    <li v-for='(music, index) in musicDataList' @dblclick='dbplayMusic({i: index, data: musicDataList})' :class="[(imusic === index && ifimusic === true) ? 'activeLi' :'']">
+		    <li v-for='(music, index) in musicDataList' @dblclick='dbplayMusic(index)' :class="[(imusic === index && ifimusic === true) ? 'activeLi' :'']">
 		     <label>
 		       <div class="music_box lf">
 		         <span class="m_check lf"><input type="checkbox" :value="music" v-model='checkList'><img src="../../static/img/choose.png"></span>
@@ -21,16 +21,16 @@
 		         <span class="m_name hidden-text lf">{{music.title}}</span>
 		       </div>
 		       <div class="m_singer lf hidden-text">{{music.author}}</div>
-		       <span class="play_btn"><img src="../../static/img/l_b.png" @click.prevent='dbplayMusic({i: index, data: musicDataList})'></span>
+		       <span class="play_btn"><img src="../../static/img/l_b.png" @click.prevent='dbplayMusic(index)'></span>
 		       <div class="m_special lf">
 		       	<span class="hidden-text lf"><p v-if='music.album_title'>{{music.album_title}}</p><p v-else>&nbsp;</p></span>
 		       	<span class="lf contorl_img">
-		       		<img src="../../static/img/l_b.png" @click.prevent='dbplayMusic({i: index, data: musicDataList})'>
+		       		<img src="../../static/img/l_b.png" @click.prevent='dbplayMusic(index)'>
 		       		<span class="add_img" @mouseover='ifcollect = true' @mouseout='ifcollect = false'>
 		       			<img src="../../static/img/l_j.png">
 		       			<div class="choose_collect" v-if='ifcollect'>
 		       				<ul>
-		       					<li v-for='(mym, index) in mySortList' @click.prevent='addMyOneList(index, music)' class="hidden-text">{{mym.mname}}</li>
+		       					<li v-for='(mySortName, index) in mySortList' @click.prevent='addMyOneList(index, music)' class="hidden-text">{{mySortName.mname}}</li>
 		       				</ul>
 		       			</div>
 		       		</span>
@@ -42,7 +42,7 @@
 	  </ul>
 	    <!-- btn -->
 	  <div class="opration_btn">
-	    <div class="btn_check"><input type="checkbox" name="" v-model='allcheck' @click='allcheckFun'><img src="../../static/img/choose.png"></div>
+	    <div class="btn_check"><input type="checkbox" name="" v-model='allcheck'><img src="../../static/img/choose.png"></div>
 	    <div class="btn_button" @click='deleteSomeMusic'><span><img src="../../static/img/btn_x.png">删除</span></div>
 	    <div class="btn_button" @click='pushMymusicList'><span><img src="../../static/img/btn_j.png">添加到歌单</span></div>
 	  </div>
@@ -50,55 +50,41 @@
 </template>
 <script>
 import async from 'async'
-import {mapGetters, mapState, mapMutations} from 'vuex'
+import {mapActions, mapState, mapMutations} from 'vuex'
 export default {
 	name: 'centerConetnt',
 	data() {
 		return {
-		  ifcollect: false,
-		  allcheck: false,
-		  checkList: [],
-		  myckeckList: [],
-		  musicDataList: []
+		  ifcollect: false,		//控制图标显示隐藏
+		  allcheck: false,		//全选
+		  checkList: []		//歌曲的复选框 选中列表
+		}
+	},
+	watch: {
+		allcheck: function() {
+			this.allcheckFun()
 		}
 	},
 	computed: {
-		...mapState(['nowType', 'mySortList', 'myIndex', 'imusic', 'ifimusic', 'dbType', 'dbIndex', 'wordSetTimeout', 'num', 'ifmusiclist'])
-	},
-	watch: {
-		nowType: function() {
-			if(this.nowType === 0) {return false}
-			this.getMusicDataList(this.nowType)
-		},
-		myIndex: function() {
-			if(this.myIndex === -1) {return false}
-			this.getMyMusicList(this.myIndex)
-		}
+		...mapState(['nowMusicType', 'mySortList', 'nowMyMusicIndex', 'imusic', 'ifimusic', 'dbType', 'dbIndex', 'wordSetTimeout', 'ifSortList', 'musicDataList'])
 	},
 	methods: {
-		...mapMutations(['changeNowSongId', 'pushMymusic', 'nowMusic', 'changeDbType', 'ifimusicFun', 'changeDbIndex', 'setcurrentIndex', 'setScrollT', 'addNum']),
-		// 获取音乐
-		getMusicDataList(t) {
-			this.$http.jsonp('http://tingapi.ting.baidu.com/v1/restserver/ting?format=json&calback=&from=webapp_music&method=baidu.ting.billboard.billList&type=' + t + '&size=' + this.num + '&offset=0').then((response) => {
-				this.musicDataList = response.body.song_list
-			}).catch((response) => {
-				console.log('error!')
-			})
-		},
+		...mapMutations(['pushMymusic', 'getIMusic', 'changeDbTypeIndex', 'ifimusicFun', 'setcurrentIndex', 'setScrollT', 'changeNowSong']),
+		...mapActions(['']),
 		// 播放音乐
-		dbplayMusic(item) {
+		dbplayMusic(index) {
 			clearTimeout(this.wordSetTimeout)	//歌词定时器
 			this.setcurrentIndex(0)		//歌曲播放时间变为0
 			this.setScrollT(0)		//歌词滚动变为0
-			this.nowMusic(item.i)	//当前歌曲index
-			this.changeNowSongId(item)	//播放
-			this.changeDbType()		//另nowType
-			this.changeDbIndex()	//另myIndex
-			if(this.dbType === this.nowType && this.dbIndex === this.myIndex) {
+			this.getIMusic(index)	//当前歌曲index
+			this.changeNowSong(index) //播放
+			this.changeDbTypeIndex()		//nowMusicType nowMyMusicIndex 赋值
+			if(this.dbType === this.nowMusicType && this.dbIndex === this.nowMyMusicIndex) {
 				this.ifimusicFun(true)
 			}else {
 				this.ifimusicFun(false)
 			}
+			document.getElementById('myaudio').play()
 		},
 		// 删除音乐
 		deleteMusic(index) {
@@ -116,13 +102,9 @@ export default {
 			this.checkList = []
 			this.allcheck = false
 		},
-		// 获取我的音乐
-		getMyMusicList(index) {
-			this.musicDataList = this.mySortList[index].dataList
-		},
 		// 全选
 		allcheckFun() {
-			if(this.allcheck === false) {
+			if(this.allcheck === true) {
 				this.musicDataList.forEach((item) => {
 					this.checkList.push(item)
 				})
@@ -161,20 +143,17 @@ export default {
 				this.mySortList[i].dataList.push(item)
 			}
 		},
+		// 滚动加载歌曲
 		scrollSlice(e) {
-			if(this.ifmusiclist === true) {
-				var h = this.num * 40 - this.$refs.scrollBox.clientHeight
-				if(e.currentTarget.scrollTop >= h) {
-					this.addNum(20)
-					this.getMusicDataList(this.nowType)
-				}
+			if(this.ifSortList === true) {
+				var h = this.$refs.scrollBox.clientHeight
+				var eTop = e.currentTarget.scrollTop
 			}
+			this.$emit('scrollSlice', {eTop: eTop, h: h})
 		}
 	},
 	created() {
-		this.$nextTick(() => {
-			this.getMusicDataList(this.nowType)
-		})
+		this.allcheckFun()
 	}
 }
 </script>
@@ -279,10 +258,10 @@ export default {
 	  width: 39%;
 	}
 	.m_special>span:nth-child(1) { 
-	  width: 70%;
+	  width: 69%;
 	}
 	.m_special>span:nth-child(2) {
-	  width: 30%;
+	  width: 31%;
 	}
 	.m_special>span>img {
 	  height: 18px;
@@ -315,6 +294,8 @@ export default {
 	  width: 100%;
 	  z-index: 2;
 	  cursor: pointer;
+	  opacity: 0;
+	  filter:alpha(opacity=0);
 	}
 	.music_box>span>input[type=checkbox]:checked +img,.opration_btn>div.btn_check>input[type=checkbox]:checked +img {
 	  display: block;
@@ -365,7 +346,7 @@ export default {
 	  height: 18px;
 	  position: absolute;
 	  left: 8px;
-	  top: 7px;
+	  top: 6px;
 	}
 
 	/*media*/
@@ -388,7 +369,7 @@ export default {
 	}
 	@media screen and (max-width: 414px) {
 	  .title_singer {display: none;}
-	  .music_box>.m_name {width: 285px;}
+	  .music_box>.m_name {width: 190px;}
 	  .m_singer{display: none;}
 	  .center_title,.center_music_list>li>label {font-size: 14px;}
 	  .music_box>span.m_check,.opration_btn>div.btn_check {height: 15px; width: 15px;}

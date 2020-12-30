@@ -3,24 +3,44 @@
 -->
 <template>
   <div class="hello">
-    <h1>{{ msg }}</h1>
-    <div class="box">
-      <range w='80%' dw='90%' pw='50%' ifload='true'></range>
+    <v-touch class="box" v-on:swipeleft="Swipeleft" v-on:swiperight="Swiperight" v-on:swipeup="Swipeup" :style='{marginLeft: l}'>
+      <div></div>
+    </v-touch>
+    <div class="dv" @click.capture='dvClick'>
+      <div class="ch" @click='chClick'></div>
     </div>
   </div>
 </template>
 
 <script>
-import range from './range'
 export default {
   name: 'HelloWorld',
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App'
+      lefthe: 0
     }
   },
-  components: {
-    range
+  computed: {
+    l: function() {
+      return this.lefthe + 'px'
+    }
+  },
+  methods :{
+    Swipeleft:function(data){
+       this.lefthe = -50
+    },
+    Swiperight:function(data){
+        this.lefthe = 50
+    },
+    Swipeup:function(data){
+       console.log('Swipeup')
+    },
+    dvClick:function() {
+      alert('dv')
+    },
+    chClick:function() {
+      alert('ch')
+    }
   }
 }
 </script>
@@ -28,8 +48,22 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .box {
-  height: 20px;
-  background: #ccc;
-  padding: 5px;
+  height: 100px;
+  width: 100px;
+}
+.box>div {
+  height: 100%;
+  width: 100%;
+  border: 1px solid red;
+}
+.dv {
+  height: 200px;
+  width: 200px;
+  background: #000;
+}
+.ch {
+  height: 50px;
+  width: 50px;
+  background: red;
 }
 </style>
